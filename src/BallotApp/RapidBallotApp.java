@@ -64,11 +64,9 @@ public class RapidBallotApp
      */
     public static void main(String[] args)
     {
-        try (Scanner input = new Scanner(System.in))
-        {
-            RapidBallotApp app = new RapidBallotApp(input);
-            app.run();
-        }
+        Scanner input = new Scanner(System.in);
+        RapidBallotApp app = new RapidBallotApp(input);
+        app.run();
     }
 
 
