@@ -22,10 +22,9 @@ public class CandidateContest
     private int votingMethod;
 
     /**
-     * Creates a candidate contest using plurality voting.
-     *
-     * Time complexity: O(K^2 L), where K is the number of candidates and L is
-     * the maximum name length.
+     * Creates a candidate contest using plurality voting. Time complexity:
+     * O(K^2 L), where K is the number of candidates and L is the maximum name
+     * length.
      *
      * @param id
      *            positive contest ID
@@ -41,10 +40,8 @@ public class CandidateContest
 
 
     /**
-     * Creates a contest with the selected voting method.
-     *
-     * Time complexity: O(K^2 L), where K is the number of candidates and L is
-     * the maximum name length.
+     * Creates a contest with the selected voting method. Time complexity: O(K^2
+     * L), where K is the number of candidates and L is the maximum name length.
      *
      * @param id
      *            positive contest ID
@@ -130,10 +127,9 @@ public class CandidateContest
 
 
     /**
-     * Finds the stored spelling of a candidate name, ignoring case.
-     *
-     * Time complexity: O(K^2 L) for random-access candidate lists, where K is
-     * the candidate count and L is the maximum name length.
+     * Finds the stored spelling of a candidate name, ignoring case. Time
+     * complexity: O(K^2 L) for random-access candidate lists, where K is the
+     * candidate count and L is the maximum name length.
      *
      * @param s
      *            entered candidate name
@@ -150,10 +146,9 @@ public class CandidateContest
     /**
      * Adds one valid ballot, rejecting a repeated voter ID. Single-choice
      * ballots must be used for methods 1 and 2. Ranked-choice ballots must rank
-     * every candidate exactly once.
-     *
-     * Time complexity: O(K^3 L + V L) for ranked ballots and O(K^2 L + V L)
-     * for single-choice ballots, where V is the stored vote count.
+     * every candidate exactly once. Time complexity: O(K^3 L + V L) for ranked
+     * ballots and O(K^2 L + V L) for single-choice ballots, where V is the
+     * stored vote count.
      *
      * @param vote
      *            ballot to record
@@ -173,6 +168,7 @@ public class CandidateContest
         }
 
         List<String> rankings = vote.getRankedChoices();
+
         if (votingMethod == 3)
         {
             // Check the full ranking and its exact canonical spelling.
@@ -212,10 +208,8 @@ public class CandidateContest
 
 
     /**
-     * Removes the vote for a trimmed, case-sensitive voter ID.
-     *
-     * Time complexity: O(V L), where V is the stored vote count and L is the
-     * voter ID length.
+     * Removes the vote for a trimmed, case-sensitive voter ID. Time complexity:
+     * O(V L), where V is the stored vote count and L is the voter ID length.
      *
      * @param voterId
      *            ID to remove
@@ -235,11 +229,9 @@ public class CandidateContest
 
     /**
      * Counts first-choice votes, including zero for candidates with no votes.
-     * Preserves the order in which candidates were added.
-     *
-     * Time complexity: O(K + V^2), where K is the candidate count and V is
-     * the stored vote count; repeated indexed chain access causes the
-     * quadratic term.
+     * Preserves the order in which candidates were added. Time complexity: O(K
+     * + V^2), where K is the candidate count and V is the stored vote count;
+     * repeated indexed chain access causes the quadratic term.
      *
      * @return candidate names mapped to their vote counts
      */
@@ -261,8 +253,8 @@ public class CandidateContest
 
 
     /**
-     * Time complexity: Same as getPluralityResultSummary(): O(V^2 + R^2),
-     * where V is the vote count and R is the result length.
+     * Time complexity: Same as getPluralityResultSummary(): O(V^2 + R^2), where
+     * V is the vote count and R is the result length.
      *
      * @return the original MVP plurality results
      */
@@ -313,7 +305,6 @@ public class CandidateContest
 
     /**
      * Reports first-choice totals and the highest-scoring candidate or tie.
-     *
      * Time complexity: O(V^2 + R^2), where V is the vote count and R is the
      * result length; repeated string concatenation can be quadratic.
      *
@@ -365,10 +356,9 @@ public class CandidateContest
 
 
     /**
-     * Reports a winner only when a candidate has more than half the votes.
-     *
-     * Time complexity: O(V^2 + R^2), where V is the vote count and R is the
-     * result length.
+     * Reports a winner only when a candidate has more than half the votes. Time
+     * complexity: O(V^2 + R^2), where V is the vote count and R is the result
+     * length.
      *
      * @return formatted majority-required results
      */
@@ -396,11 +386,9 @@ public class CandidateContest
      * Runs instant-runoff voting using each ballot's ranked preferences. The
      * lowest candidate is removed each round, and ballots transfer to the next
      * remaining candidate. If several candidates are tied for last place, the
-     * election reports an unresolved elimination tie.
-     *
-     * Time complexity: O(K V^2 + K^3 V L + R^2), where K is the candidate
-     * count, V is the vote count, L is the maximum name length, and R is the
-     * result length.
+     * election reports an unresolved elimination tie. Time complexity: O(K V^2
+     * + K^3 V L + R^2), where K is the candidate count, V is the vote count, L
+     * is the maximum name length, and R is the result length.
      *
      * @return round-by-round ranked-choice results
      */
@@ -504,7 +492,6 @@ public class CandidateContest
 
     /**
      * Builds the heading and first-choice totals shared by two result methods.
-     *
      * Time complexity: O(V^2 + R^2), where V is the vote count and R is the
      * result length.
      *
