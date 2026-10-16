@@ -1,45 +1,39 @@
 package BallotApp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Immutable record of one voter's candidate ballot.
- 
- * Equality and hash code depend ONLY on the trimmed, case-sensitive voter ID
- * and the CandidateVote class, not on candidate, ranking, contest ID, or
- * location. This supports duplicate-ID detection within a specific contest's
- * LinkedChain.
- 
+ * Immutable record of one voter's ballot in a candidate contest. Two
+ * CandidateVote objects are equal if their trimmed, case-sensitive voter IDs
+ * match. Candidate contests use this rule to prevent duplicate voter IDs.
  */
 public final class CandidateVote
 {
-
     private final int contestId;
     private final String candidateName;
     private final String voterId;
     private final String location;
 
     /**
-     * STRETCH: Immutable ranked preferences. A single-choice ballot contains
-     * one choice; an IRV ballot contains all candidates in order.
+     * The candidates in preference order. Single-choice ballots have one name.
+     * The list is copied when stored and when returned to protect the ballot.
      */
     private final List<String> rankedChoices;
 
     /**
-     * Creates an immutable single-choice candidate ballot (MVP signature).
-     * Required text is trimmed; blank location becomes "Unspecified". The
-     * session resolves the canonical candidate name before calling.
+     * Creates a single-choice ballot.
      *
      * @param contestId
      *            positive candidate contest ID
      * @param candidateName
-     *            selected canonical candidate name
+     *            selected candidate name
      * @param voterId
-     *            required voter ID (1-40 characters after trimming)
+     *            required voter ID (up to 40 characters)
      * @param location
-     *            optional location (maximum 80 characters)
+     *            optional location (up to 80 characters)
      * @throws IllegalArgumentException
-     *             for invalid fields
+     *             if any field is invalid
      */
     public CandidateVote(
         int contestId,
@@ -47,98 +41,38 @@ public final class CandidateVote
         String voterId,
         String location)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (contestId <= 0)
+        {
+            throw new IllegalArgumentException("Contest ID must be positive.");
+        }
+
+        this.contestId = contestId;
+        this.candidateName = InputParser
+            .parseRequiredText(candidateName, InputParser.MAX_NAME_LENGTH);
+        this.voterId = InputParser
+            .parseRequiredText(voterId, InputParser.MAX_VOTER_ID_LENGTH);
+        this.location = InputParser.parseLocation(location);
+
+        rankedChoices = new ArrayList<String>();
+        rankedChoices.add(this.candidateName);
     }
 
 
     /**
-     * Returns the candidate contest ID.
-     *
-     * @return positive contest ID
-     */
-    public int getContestId()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns the selected candidate; for ranked-choice ballots this is the
-     * highest-ranked (first-preference) candidate.
-     *
-     * @return canonical first-choice candidate name
-     */
-    public String getCandidateName()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns the trimmed but case-sensitive voter ID.
-     *
-     * @return voter ID
-     */
-    public String getVoterId()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns the location ("Unspecified" for blank input).
-     *
-     * @return normalized location
-     */
-    public String getLocation()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Compares only exact voter ID after normalization and requires the other
-     * object to be a CandidateVote. The selected candidate, contest, and
-     * location do not contribute to equality.
-     *
-     * @param other
-     *            object to compare
-     * @return true for a CandidateVote with the same voter ID
-     */
-    @Override
-    public boolean equals(Object other)
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Computes a hash consistent with equals: equal IDs hash equally.
-     *
-     * @return hash based on the case-sensitive normalized voter ID
-     */
-    @Override
-    public int hashCode()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * STRETCH: Creates an immutable ranked-choice ballot. The input is an
-     * ordered preference list; the contest later validates that each configured
-     * candidate appears exactly once.
+     * Creates a ranked-choice ballot. Rankings are listed from first to last.
+     * The contest is responsible for checking that all available candidates
+     * have been ranked.
      *
      * @param contestId
      *            positive candidate contest ID
      * @param rankings
-     *            preferred candidate names, most preferred first
+     *            ordered candidate names, from most to least preferred
      * @param voterId
      *            required voter ID
      * @param location
      *            optional location
      * @throws IllegalArgumentException
-     *             for invalid fields
+     *             if the ballot is invalid
      */
     public CandidateVote(
         int contestId,
@@ -146,18 +80,112 @@ public final class CandidateVote
         String voterId,
         String location)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (contestId <= 0)
+        {
+            throw new IllegalArgumentException("Contest ID must be positive.");
+        }
+        if (rankings == null || rankings.isEmpty()
+            || rankings.size() > InputParser.MAX_CANDIDATES)
+        {
+            throw new IllegalArgumentException(
+                "A ballot must rank between 1 and 20 candidates.");
+        }
+
+        List<String> cleanedRankings = new ArrayList<String>();
+        for (String name : rankings)
+        {
+            String cleanedName = InputParser
+                .parseRequiredText(name, InputParser.MAX_NAME_LENGTH);
+            for (String previous : cleanedRankings)
+            {
+                if (previous.equalsIgnoreCase(cleanedName))
+                {
+                    throw new IllegalArgumentException(
+                        "Each candidate can appear only once in a ranking.");
+                }
+            }
+            cleanedRankings.add(cleanedName);
+        }
+
+        this.contestId = contestId;
+        this.rankedChoices = cleanedRankings;
+        this.candidateName = cleanedRankings.get(0);
+        this.voterId = InputParser
+            .parseRequiredText(voterId, InputParser.MAX_VOTER_ID_LENGTH);
+        this.location = InputParser.parseLocation(location);
     }
 
 
     /**
-     * STRETCH: Returns an immutable or defensive-copy list of preferences in
-     * ballot order. For single-choice ballots, the list has one item.
+     * @return the candidate contest ID
+     */
+    public int getContestId()
+    {
+        return contestId;
+    }
+
+
+    /**
+     * @return the selected candidate, or the first preference for ranked
+     *             ballots
+     */
+    public String getCandidateName()
+    {
+        return candidateName;
+    }
+
+
+    /**
+     * @return the trimmed, case-sensitive voter ID
+     */
+    public String getVoterId()
+    {
+        return voterId;
+    }
+
+
+    /**
+     * @return the location, or "Unspecified" if none was given
+     */
+    public String getLocation()
+    {
+        return location;
+    }
+
+
+    /**
+     * Compares ballots using only their voter IDs, preserving letter case. The
+     * candidate choice, contest ID, and location are not compared.
      *
-     * @return ordered preferences
+     * @param other
+     *            object to compare with this vote
+     * @return true if the other object is a CandidateVote with the same voter
+     *             ID
+     */
+    @Override
+    public boolean equals(Object other)
+    {
+        if (this == other)
+        {
+            return true;
+        }
+        if (!(other instanceof CandidateVote))
+        {
+            return false;
+        }
+        CandidateVote otherVote = (CandidateVote)other;
+        return voterId.equals(otherVote.voterId);
+    }
+
+
+    /**
+     * Returns a copy of the candidate rankings so callers cannot change the
+     * choices stored in this ballot.
+     *
+     * @return copy of the ranking list, in preference order
      */
     public List<String> getRankedChoices()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return new ArrayList<String>(rankedChoices);
     }
 }
