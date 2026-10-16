@@ -304,8 +304,9 @@ public class ElectionStorage
 
 
     /**
-     * Lists save names (without .rball) in alphabetical order. Returns an empty
-     * list if the save directory does not exist yet.
+     * Lists save names (without .rball) in alphabetical order. Uses
+     * ElectionChain<String> to store and retrieve valid filenames. Returns an
+     * empty list if the save directory does not exist yet.
      *
      * Time complexity: O(D log D + L), where D is the number of matching
      * directory entries and L is their total filename length, excluding
@@ -319,6 +320,7 @@ public class ElectionStorage
         throws IOException
     {
         List<String> names = new ArrayList<String>();
+        ElectionChain<String> savedNames = new ElectionChain<String>();
 
         if (!Files.exists(directory))
         {
@@ -344,16 +346,25 @@ public class ElectionStorage
                     try
                     {
                         InputParser.parseSaveName(name);
-                        names.add(name);
+
+                        // Store the filename in the generic chain.
+                        savedNames.add(name);
                     }
                     catch (IllegalArgumentException e)
                     {
-                        // Ignore files that do not have a valid save name.
+                        // Ignore files without a valid save name.
                     }
                 }
             }
         }
 
+        // Retrieve filenames from the chain through its public API.
+        for (int i = 0; i < savedNames.size(); i++)
+        {
+            names.add(savedNames.get(i));
+        }
+
+        // Sort the filenames alphabetically before returning them.
         Collections.sort(names);
         return names;
     }
