@@ -36,9 +36,6 @@ The **MVP workflow is implemented**, along with two stretch features: selectable
 
 Save files use the `.rball` extension and are stored in an `elections` directory relative to the program's working directory. Saving a session under an existing name overwrites that file **without confirmation**, as deliberately chosen for this prototype. Saving is not automatic when exiting.
 
-**Test status:** The current generated suite contains 70 JUnit 4 test methods across 11 test classes. In the prior local JUnit-compatible test runner, 70 passed and measured line coverage was approximately **94.8%**, not 100%.
----
-
 ## Reflection
 
 ### 1. What changed from our specification, and why?
