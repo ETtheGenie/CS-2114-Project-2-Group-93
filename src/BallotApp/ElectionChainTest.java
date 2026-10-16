@@ -55,6 +55,7 @@ public class ElectionChainTest
     {
         ElectionChain<Integer> chain = new ElectionChain<Integer>();
         assertFalse(chain.remove(1));
+        
         chain.add(1);
         chain.add(2);
         chain.add(3);
@@ -63,11 +64,14 @@ public class ElectionChainTest
         assertEquals(Integer.valueOf(4), chain.get(0));
         assertEquals(Integer.valueOf(2), chain.get(1));
         assertTrue(chain.remove(4));
-        assertTrue(chain.remove(1));
+        
         assertTrue(chain.remove(2));
+        assertFalse(chain.remove(2));
+        
+        assertTrue(chain.remove(1));
         assertTrue(chain.isEmpty());
         assertEquals(0, chain.size());
-        assertFalse(chain.remove(2));
+        
     }
 
 
