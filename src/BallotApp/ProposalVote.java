@@ -1,34 +1,31 @@
 package BallotApp;
 
 /**
- * Immutable record of one voter's yes/no proposal ballot.
- * 
- * Equality and hash code depend ONLY on the trimmed, case-sensitive voter ID
- * and the ProposalVote class. Different voters may cast the same yes/no choice;
- * a voter ID can appear once per proposal.
+ * Immutable record of one voter's yes/no proposal ballot. Two ProposalVote
+ * objects are equal when their trimmed, case-sensitive voter IDs match.
+ * Different voters may cast the same yes/no choice, but each voter ID can
+ * appear only once within a particular proposal.
  */
 public final class ProposalVote
 {
-
     private final int proposalId;
     private final boolean yesVote;
     private final String voterId;
     private final String location;
 
     /**
-     * Creates an immutable proposal ballot. Validates the positive ID, required
-     * voter ID, and optional location. Blank location becomes "Unspecified".
+     * Creates a proposal ballot and validates its information.
      *
      * @param proposalId
      *            positive proposal ID
      * @param yesVote
-     *            true for yes and false for no
+     *            true for yes, false for no
      * @param voterId
-     *            required ID, trimmed but case-sensitive
+     *            required voter ID (up to 40 characters)
      * @param location
-     *            optional location, maximum 80 characters
+     *            optional location (up to 80 characters)
      * @throws IllegalArgumentException
-     *             for invalid data
+     *             if any field is invalid
      */
     public ProposalVote(
         int proposalId,
@@ -36,77 +33,76 @@ public final class ProposalVote
         String voterId,
         String location)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (proposalId <= 0)
+        {
+            throw new IllegalArgumentException("Proposal ID must be positive.");
+        }
+
+        this.proposalId = proposalId;
+        this.yesVote = yesVote;
+        this.voterId = InputParser
+            .parseRequiredText(voterId, InputParser.MAX_VOTER_ID_LENGTH);
+        this.location = InputParser.parseLocation(location);
     }
 
 
     /**
-     * Returns the proposal ID.
-     *
-     * @return positive proposal ID
+     * @return the positive proposal ID
      */
     public int getProposalId()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return proposalId;
     }
 
 
     /**
-     * Indicates whether this is a yes vote.
-     *
-     * @return true for yes, false for no
+     * @return true for a yes vote, false for a no vote
      */
     public boolean isYesVote()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return yesVote;
     }
 
 
     /**
-     * Returns the trimmed, case-sensitive voter ID.
-     *
-     * @return voter ID
+     * @return the trimmed, case-sensitive voter ID
      */
     public String getVoterId()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return voterId;
     }
 
 
     /**
-     * Returns the normalized location.
-     *
-     * @return location or "Unspecified"
+     * @return the location, or "Unspecified" for blank input
      */
     public String getLocation()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return location;
     }
 
 
     /**
-     * Compares only the voter ID and ProposalVote class, irrespective of yes/no
-     * choice, proposal ID, or location.
+     * Compares proposal votes using only their voter IDs. Proposal ID, yes/no
+     * choice, and location do not affect equality.
      *
      * @param other
      *            object to compare
-     * @return true for a ProposalVote with the same voter ID
+     * @return true if other is a ProposalVote with the same voter ID
      */
     @Override
     public boolean equals(Object other)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
+        if (this == other)
+        {
+            return true;
+        }
+        if (!(other instanceof ProposalVote))
+        {
+            return false;
+        }
 
-
-    /**
-     * Returns a hash based on normalized voter ID, consistent with equals.
-     *
-     * @return voter-ID hash
-     */
-    @Override
-    public int hashCode()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        ProposalVote otherVote = (ProposalVote)other;
+        return voterId.equals(otherVote.voterId);
     }
 }
