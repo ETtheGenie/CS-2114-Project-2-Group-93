@@ -60,9 +60,9 @@ MVP APIs follow the submitted specification. New stretch features are proposals 
 
 
 
-Next Steps:
+## Next Steps:
 
-The model, contest, session, and storage layers are implemented, and everything compiles under Java. Two hashCode warnings come up but can be fixed easily.
+The model, contest, session, and storage layers are implemented, and everything compiles under Java. Two hashCode warnings come up but can be fixed easily. And our stretch goal of  a GUI for our project will be committed in the future.
 
 What’s left for the MVP: Polishing our classes and making sure everything runs as intended , Every signature from the spec (pp. 5-7) matches, making sure No menu path reaches an UnsupportedOperationException
 
@@ -73,14 +73,10 @@ Small cleanups:
 -Decide whether our ElectionChain + top-level Node setup is acceptable.
 
 Stretch goals:
-
+Implementing a GUI for our entire app. 
 The voting methods and ElectionStorage already have been written. What remains is the controller side:
 
--runMainMenu, runSessionMenu, runSaveElection, runLoadElection, and tracking activeFilename
--Only replace the active session after a load fully succeeds
--A confirmation prompt before overwriting a save 
-
-Testing: A coverage check to find branch gaps
+Testing: A coverage check to find branch gaps, Testing for our GUI when it gets implemented
 
 Documentation and polish
 -Rewrite the README. It still describes an unimplemented skeleton, LinkedChain, and the default package, and we now use package BallotApp;.
