@@ -19,7 +19,7 @@ public class CandidateContest
     private int contestId;
     private String position;
     private ArrayList<String> candidates;
-    private LinkedChain<CandidateVote> votes;
+    private ElectionChain<CandidateVote> votes;
 
     /**
      * STRETCH: Administrator-selected vote-counting method for this contest. 1
