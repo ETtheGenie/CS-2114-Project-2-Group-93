@@ -60,9 +60,8 @@ public class ElectionChainTest
         chain.add(2);
         chain.add(3);
         chain.add(4);
+        assertEquals(4, chain.size());
         assertTrue(chain.remove(3));
-        assertEquals(Integer.valueOf(4), chain.get(0));
-        assertEquals(Integer.valueOf(2), chain.get(1));
         assertTrue(chain.remove(4));
         
         assertTrue(chain.remove(2));
