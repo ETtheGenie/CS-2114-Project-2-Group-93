@@ -19,7 +19,7 @@ public final class CandidateVote
      * The candidates in preference order. Single-choice ballots have one name.
      * The list is copied when stored and when returned to protect the ballot.
      */
-    private final List<String> rankedChoices;
+    private List<String> rankedChoices;
 
     /**
      * Creates a single-choice ballot.
