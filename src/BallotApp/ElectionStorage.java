@@ -27,6 +27,9 @@ public class ElectionStorage
     /**
      * Creates a storage manager for the given directory.
      *
+     * Time complexity: O(P), where P is the directory path length, excluding
+     * filesystem latency.
+     *
      * @param directory
      *            folder containing saved elections
      * @throws IllegalArgumentException
@@ -51,6 +54,10 @@ public class ElectionStorage
     /**
      * Saves every contest, proposal, voting method, and ballot. An existing
      * save with the same name is overwritten automatically.
+     *
+     * Time complexity: O(V^2 + K^3 V + B), where V is the ballot count, K is
+     * the maximum candidates per contest, and B is the serialized byte count;
+     * validation replays ballots.
      *
      * @param session
      *            election to save
@@ -139,6 +146,10 @@ public class ElectionStorage
     /**
      * Loads a saved election into a NEW session. A bad file causes IOException,
      * so the controller's current session is never changed by this method.
+     *
+     * Time complexity: O(V^2 + K^3 V + B), where V is the loaded ballot
+     * count, K is the maximum candidates per contest, and B is the input byte
+     * count.
      *
      * @param filename
      *            save name without .rball
@@ -296,6 +307,10 @@ public class ElectionStorage
      * Lists save names (without .rball) in alphabetical order. Returns an empty
      * list if the save directory does not exist yet.
      *
+     * Time complexity: O(D log D + L), where D is the number of matching
+     * directory entries and L is their total filename length, excluding
+     * filesystem latency.
+     *
      * @return names of available saved elections
      * @throws IOException
      *             if the directory cannot be read
@@ -347,6 +362,9 @@ public class ElectionStorage
     /**
      * Validates that a session can be safely reconstructed. New temporary
      * contests replay each ballot, checking IDs, rankings, and duplicate IDs.
+     *
+     * Time complexity: O(V^2 + K^3 V), where V is the ballot count and K is
+     * the maximum candidates per contest; replay checks duplicate IDs.
      *
      * @param loaded
      *            session to validate
@@ -424,6 +442,9 @@ public class ElectionStorage
 
     /**
      * Validates a save name and builds a path inside this storage directory.
+     *
+     * Time complexity: O(L), where L is the save name and resolved path
+     * length, excluding filesystem latency.
      */
     private Path getSavePath(String filename)
     {

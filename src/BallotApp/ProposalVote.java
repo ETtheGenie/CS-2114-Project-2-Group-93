@@ -16,6 +16,9 @@ public final class ProposalVote
     /**
      * Creates a proposal ballot and validates its information.
      *
+     * Time complexity: O(L), where L is the total length of the supplied
+     * text.
+     *
      * @param proposalId
      *            positive proposal ID
      * @param yesVote
@@ -47,6 +50,8 @@ public final class ProposalVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the positive proposal ID
      */
     public int getProposalId()
@@ -56,6 +61,8 @@ public final class ProposalVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return true for a yes vote, false for a no vote
      */
     public boolean isYesVote()
@@ -65,6 +72,8 @@ public final class ProposalVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the trimmed, case-sensitive voter ID
      */
     public String getVoterId()
@@ -74,6 +83,8 @@ public final class ProposalVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the location, or "Unspecified" for blank input
      */
     public String getLocation()
@@ -85,6 +96,8 @@ public final class ProposalVote
     /**
      * Compares proposal votes using only their voter IDs. Proposal ID, yes/no
      * choice, and location do not affect equality.
+     *
+     * Time complexity: O(L), where L is the voter ID length.
      *
      * @param other
      *            object to compare

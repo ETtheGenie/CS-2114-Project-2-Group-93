@@ -27,6 +27,8 @@ public class RapidBallotApp
     /**
      * Creates a controller with no active session.
      *
+     * Time complexity: O(1), excluding filesystem latency.
+     *
      * @param scanner
      *            source of terminal input
      * @throws IllegalArgumentException
@@ -47,7 +49,12 @@ public class RapidBallotApp
     }
 
 
-    /** Runs until the user exits or input ends. */
+    /**
+     * Runs until the user exits or input ends.
+     *
+     * Time complexity: O(T + sum of selected operation costs), where T is the
+     * number of menu/input steps; execution continues until exit or EOF.
+     */
     public void run()
     {
         System.out.println("Welcome to RapidBallot!");
@@ -58,6 +65,9 @@ public class RapidBallotApp
 
     /**
      * Starts the program using keyboard input.
+     *
+     * Time complexity: Same as run(), because this method constructs the
+     * controller and delegates to it.
      *
      * @param args
      *            unused command-line arguments
@@ -73,6 +83,10 @@ public class RapidBallotApp
     /**
      * Collects a session name, contest setup, and proposal setup. Does not
      * replace the active session until setup is completely finished.
+     *
+     * Time complexity: O(T + sum K_i^2 L), where T is the total input
+     * processed and K_i is the candidate count of each created contest;
+     * retries add input work.
      */
     private void runAdminSetup()
     {
@@ -226,7 +240,13 @@ public class RapidBallotApp
     }
 
 
-    /** Collects and records one candidate vote (or complete ranking). */
+    /**
+     * Collects and records one candidate vote (or complete ranking).
+     *
+     * Time complexity: O(T + C + A(K^3 L + V L)), where T is total input/output
+     * length, C is the contest count, A is vote attempts, K is the selected
+     * contest's candidate count, and V is its vote count.
+     */
     private void runCandidateVoting()
     {
         List<CandidateContest> contests = session.getCandidateContests();
@@ -349,7 +369,13 @@ public class RapidBallotApp
     }
 
 
-    /** Collects and records one yes/no proposal vote. */
+    /**
+     * Collects and records one yes/no proposal vote.
+     *
+     * Time complexity: O(T + P + A V L), where T is total input/output length,
+     * P is the proposal count, A is vote attempts, V is the selected proposal's
+     * vote count, and L is the voter ID length.
+     */
     private void runProposalVoting()
     {
         List<ProposalContest> proposals = session.getProposals();
@@ -413,7 +439,13 @@ public class RapidBallotApp
     }
 
 
-    /** Removes a vote by voter ID and returns to the session menu. */
+    /**
+     * Removes a vote by voter ID and returns to the session menu.
+     *
+     * Time complexity: O(T + C + P + A V L), where T is total input/output
+     * length, C and P are contest and proposal counts, A is correction
+     * attempts, V is the selected item's vote count, and L is the ID length.
+     */
     private void runCorrectVote()
     {
         System.out.println("\nCorrect a vote:");
@@ -506,7 +538,13 @@ public class RapidBallotApp
     }
 
 
-    /** Displays results for every candidate contest and proposal. */
+    /**
+     * Displays results for every candidate contest and proposal.
+     *
+     * Time complexity: O(sum(V_i^2 + K_i^3 V_i + R_i^2)), where each V_i is
+     * an item's vote count, K_i its candidate count, and R_i its result
+     * length.
+     */
     private void runViewResults()
     {
         System.out.println("\n--- Results: " + session.getName() + " ---");
@@ -561,6 +599,9 @@ public class RapidBallotApp
     /**
      * Prints a prompt and returns one input line. EOF ends the application.
      *
+     * Time complexity: O(L), where L is the prompt plus entered line length;
+     * waiting for input is excluded.
+     *
      * @param prompt
      *            text to display
      * @return entered text, or null at EOF
@@ -589,6 +630,9 @@ public class RapidBallotApp
     /**
      * Reads a numbered menu option, retrying incorrect input.
      *
+     * Time complexity: O(T), where T is the total text entered across
+     * retries.
+     *
      * @param max
      *            largest valid choice
      * @return menu choice, or null at EOF
@@ -599,7 +643,12 @@ public class RapidBallotApp
     }
 
 
-    /** Shows the global menu for creating, loading, resuming, or exiting. */
+    /**
+     * Shows the global menu for creating, loading, resuming, or exiting.
+     *
+     * Time complexity: O(T + sum of selected operation costs), where T is the
+     * number of menu/input steps; the loop ends on exit or EOF.
+     */
     private void runMainMenu()
     {
         while (running)
@@ -658,7 +707,12 @@ public class RapidBallotApp
     }
 
 
-    /** Shows the election menu until the user returns to the main menu. */
+    /**
+     * Shows the election menu until the user returns to the main menu.
+     *
+     * Time complexity: O(T + sum of selected operation costs), where T is the
+     * number of menu/input steps; the loop ends on return or EOF.
+     */
     private void runSessionMenu()
     {
         boolean inSessionMenu = true;
@@ -708,6 +762,10 @@ public class RapidBallotApp
 
     /**
      * Saves the current election, automatically overwriting an existing save.
+     *
+     * Time complexity: O(T + A(V^2 + K^3 V + B)), where T is input length, A
+     * is save attempts, V is the ballot count, K is maximum candidates per
+     * contest, and B is saved bytes per attempt.
      */
     private void runSaveElection()
     {
@@ -753,7 +811,14 @@ public class RapidBallotApp
     }
 
 
-    /** Lists available saves and loads one into a new active session. */
+    /**
+     * Lists available saves and loads one into a new active session.
+     *
+     * Time complexity: O(D log D + L + A D + sum(V_i^2 + K^3 V_i + B_i)),
+     * where D is save files, L is their total name length, A is load attempts,
+     * V_i and B_i are ballots and bytes in each attempted file, and K is the
+     * maximum candidates per contest.
+     */
     private void runLoadElection()
     {
         List<String> savedElections;
@@ -813,7 +878,12 @@ public class RapidBallotApp
     }
 
 
-    /** Reads any integer in the given inclusive range. */
+    /**
+     * Reads any integer in the given inclusive range.
+     *
+     * Time complexity: O(T), where T is the total text entered across
+     * retries.
+     */
     private Integer readNumber(String prompt, int min, int max)
     {
         while (running)
@@ -836,7 +906,12 @@ public class RapidBallotApp
     }
 
 
-    /** Reads required text up to the given maximum length. */
+    /**
+     * Reads required text up to the given maximum length.
+     *
+     * Time complexity: O(T), where T is the total text entered across
+     * retries.
+     */
     private String readRequiredText(String prompt, int max)
     {
         while (running)
@@ -859,7 +934,13 @@ public class RapidBallotApp
     }
 
 
-    /** Reads a candidate name from the given allowed list. */
+    /**
+     * Reads a candidate name from the given allowed list.
+     *
+     * Time complexity: O(A N^2 L + T) for random-access choices, where A is
+     * attempts, N is choices, L is maximum choice length, and T is total
+     * entered text length.
+     */
     private String readChoiceFromList(String prompt, List<String> choices)
     {
         while (running)
@@ -882,7 +963,12 @@ public class RapidBallotApp
     }
 
 
-    /** Reads a yes/no answer. Null means EOF, not a no vote. */
+    /**
+     * Reads a yes/no answer. Null means EOF, not a no vote.
+     *
+     * Time complexity: O(T), where T is the total text entered across
+     * retries.
+     */
     private Boolean readYesNo(String prompt)
     {
         while (running)
@@ -905,7 +991,12 @@ public class RapidBallotApp
     }
 
 
-    /** Reads an optional location, using Unspecified for a blank line. */
+    /**
+     * Reads an optional location, using Unspecified for a blank line.
+     *
+     * Time complexity: O(T), where T is the total text entered across
+     * retries.
+     */
     private String readLocation()
     {
         while (running)
@@ -929,7 +1020,12 @@ public class RapidBallotApp
     }
 
 
-    /** Reads a safe filename for saving an election. */
+    /**
+     * Reads a safe filename for saving an election.
+     *
+     * Time complexity: O(T), where T is the total text entered across
+     * retries.
+     */
     private String readSaveName()
     {
         while (running)

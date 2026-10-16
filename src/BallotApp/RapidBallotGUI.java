@@ -68,6 +68,9 @@ public class RapidBallotGUI
     /**
      * Creates and displays the GUI for an election session.
      *
+     * Time complexity: O(1) for the fixed set of UI controls, excluding UI
+     * framework work.
+     *
      * @param electionSession
      *            session used by the GUI
      */
@@ -84,7 +87,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Builds the frame and all screens. */
+    /**
+     * Builds the frame and all screens.
+     *
+     * Time complexity: O(1) for the fixed set of UI controls, excluding UI
+     * framework work.
+     */
     private void buildWindow()
     {
         frame = new JFrame("RapidBallot - " + session.getName());
@@ -109,6 +117,8 @@ public class RapidBallotGUI
 
     /**
      * Creates the main menu.
+     *
+     * Time complexity: O(1) for the fixed set of UI controls.
      *
      * @return menu panel
      */
@@ -162,6 +172,8 @@ public class RapidBallotGUI
     /**
      * Creates the candidate voting screen.
      *
+     * Time complexity: O(1) for the fixed set of UI controls.
+     *
      * @return candidate panel
      */
     private JPanel buildCandidateScreen()
@@ -213,6 +225,8 @@ public class RapidBallotGUI
     /**
      * Creates the proposal voting screen.
      *
+     * Time complexity: O(1) for the fixed set of UI controls.
+     *
      * @return proposal panel
      */
     private JPanel buildProposalScreen()
@@ -255,6 +269,8 @@ public class RapidBallotGUI
     /**
      * Creates the vote correction screen.
      *
+     * Time complexity: O(1) for the fixed set of UI controls.
+     *
      * @return correction panel
      */
     private JPanel buildCorrectionScreen()
@@ -296,6 +312,8 @@ public class RapidBallotGUI
     /**
      * Creates the results screen.
      *
+     * Time complexity: O(1) for the fixed set of UI controls.
+     *
      * @return results panel
      */
     private JPanel buildResultsScreen()
@@ -326,6 +344,8 @@ public class RapidBallotGUI
     /**
      * Creates a panel with a common title area.
      *
+     * Time complexity: O(1), excluding UI framework work.
+     *
      * @param titleText
      *            screen title
      * @return panel
@@ -342,7 +362,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Refreshes the candidate contest drop-down. */
+    /**
+     * Refreshes the candidate contest drop-down.
+     *
+     * Time complexity: O(C + K), where C is the contest count and K is the
+     * selected contest's candidate count.
+     */
     private void refreshCandidateContests()
     {
         candidateContestBox.removeAllItems();
@@ -357,7 +382,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Updates candidate controls for the currently selected contest. */
+    /**
+     * Updates candidate controls for the currently selected contest.
+     *
+     * Time complexity: O(C + K), where C is the contest count and K is the
+     * selected contest's candidate count.
+     */
     private void refreshCandidateChoices()
     {
         candidateBox.removeAllItems();
@@ -383,7 +413,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Records a candidate vote using ElectionSession. */
+    /**
+     * Records a candidate vote using ElectionSession.
+     *
+     * Time complexity: O(K^3 L + V L + T) for ranked votes and O(K^2 L + V L
+     * + T) otherwise, where V is stored votes and T is entered text length.
+     */
     private void submitCandidateVote()
     {
         int index = candidateContestBox.getSelectedIndex();
@@ -433,6 +468,8 @@ public class RapidBallotGUI
     /**
      * Converts a comma-separated ranking into a list.
      *
+     * Time complexity: O(L), where L is the ranking text length.
+     *
      * @param text
      *            ranking text
      * @return ranking entries
@@ -454,7 +491,11 @@ public class RapidBallotGUI
     }
 
 
-    /** Refreshes the proposal drop-down. */
+    /**
+     * Refreshes the proposal drop-down.
+     *
+     * Time complexity: O(P), where P is the proposal count.
+     */
     private void refreshProposals()
     {
         proposalBox.removeAllItems();
@@ -466,7 +507,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Records a proposal vote using ElectionSession. */
+    /**
+     * Records a proposal vote using ElectionSession.
+     *
+     * Time complexity: O(P + V L + T), where P is the proposal count, V is
+     * stored votes, and T is entered text length.
+     */
     private void submitProposalVote()
     {
         int index = proposalBox.getSelectedIndex();
@@ -498,7 +544,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Refreshes the correction contest/proposal drop-down. */
+    /**
+     * Refreshes the correction contest/proposal drop-down.
+     *
+     * Time complexity: O(C + P), where C and P are contest and proposal
+     * counts.
+     */
     private void refreshCorrectionItems()
     {
         if (correctionItemBox == null)
@@ -529,7 +580,12 @@ public class RapidBallotGUI
     }
 
 
-    /** Removes a vote by voter ID. */
+    /**
+     * Removes a vote by voter ID.
+     *
+     * Time complexity: O(C + P + V L), where V is the selected item's vote
+     * count and L is the voter ID length.
+     */
     private void correctVote()
     {
         int index = correctionItemBox.getSelectedIndex();
@@ -569,7 +625,13 @@ public class RapidBallotGUI
     }
 
 
-    /** Rebuilds the results text from the current session. */
+    /**
+     * Rebuilds the results text from the current session.
+     *
+     * Time complexity: O(sum(V_i^2 + K_i^3 V_i + R_i^2)), where each V_i is
+     * an item's vote count, K_i its candidate count, and R_i its result
+     * length.
+     */
     private void refreshResults()
     {
         StringBuilder output = new StringBuilder();
@@ -634,6 +696,9 @@ public class RapidBallotGUI
     /**
      * Shows one GUI screen.
      *
+     * Time complexity: O(1) for the fixed set of screens, excluding UI
+     * framework work.
+     *
      * @param name
      *            screen name
      */
@@ -646,6 +711,9 @@ public class RapidBallotGUI
     /**
      * Standalone preview using sample election data. This allows the GUI to be
      * tested before it is wired into the terminal controller.
+     *
+     * Time complexity: O(1) for fixed sample data and UI controls, excluding
+     * UI framework work.
      *
      * @param args
      *            unused command-line arguments

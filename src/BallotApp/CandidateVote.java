@@ -24,6 +24,9 @@ public final class CandidateVote
     /**
      * Creates a single-choice ballot.
      *
+     * Time complexity: O(L), where L is the total length of the supplied
+     * text.
+     *
      * @param contestId
      *            positive candidate contest ID
      * @param candidateName
@@ -62,6 +65,9 @@ public final class CandidateVote
      * Creates a ranked-choice ballot. Rankings are listed from first to last.
      * The contest is responsible for checking that all available candidates
      * have been ranked.
+     *
+     * Time complexity: O(K^2 L), where K is the ranking length and L is the
+     * maximum candidate name length.
      *
      * @param contestId
      *            positive candidate contest ID
@@ -117,6 +123,8 @@ public final class CandidateVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the candidate contest ID
      */
     public int getContestId()
@@ -126,6 +134,8 @@ public final class CandidateVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the selected candidate, or the first preference for ranked
      *             ballots
      */
@@ -136,6 +146,8 @@ public final class CandidateVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the trimmed, case-sensitive voter ID
      */
     public String getVoterId()
@@ -145,6 +157,8 @@ public final class CandidateVote
 
 
     /**
+     * Time complexity: O(1).
+     *
      * @return the location, or "Unspecified" if none was given
      */
     public String getLocation()
@@ -156,6 +170,8 @@ public final class CandidateVote
     /**
      * Compares ballots using only their voter IDs, preserving letter case. The
      * candidate choice, contest ID, and location are not compared.
+     *
+     * Time complexity: O(L), where L is the voter ID length.
      *
      * @param other
      *            object to compare with this vote
@@ -181,6 +197,8 @@ public final class CandidateVote
     /**
      * Returns a copy of the candidate rankings so callers cannot change the
      * choices stored in this ballot.
+     *
+     * Time complexity: O(K), where K is the ranking length.
      *
      * @return copy of the ranking list, in preference order
      */

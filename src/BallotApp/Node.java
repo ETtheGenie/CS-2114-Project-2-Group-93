@@ -18,6 +18,8 @@ public class Node<T> {
     /**
      * Creates a node with the given data and no next node.
      *
+     * Time complexity: O(1).
+     *
      * @param data data to store
      */
     public Node(T data) {
@@ -27,6 +29,8 @@ public class Node<T> {
 
     /**
      * Creates a node with the given data and next node.
+     *
+     * Time complexity: O(1).
      *
      * @param data data to store
      * @param next reference to the next node, or null
@@ -39,6 +43,8 @@ public class Node<T> {
     /**
      * Returns the data stored in this node.
      *
+     * Time complexity: O(1).
+     *
      * @return the node's data
      */
     public T getData() {
@@ -48,6 +54,8 @@ public class Node<T> {
     /**
      * Returns the next node in the chain.
      *
+     * Time complexity: O(1).
+     *
      * @return the next node, or null if this is the last node
      */
     public Node<T> getNext() {
@@ -56,6 +64,8 @@ public class Node<T> {
 
     /**
      * Changes the reference to the next node.
+     *
+     * Time complexity: O(1).
      *
      * @param next the new next node, or null
      */

@@ -19,6 +19,8 @@ public class ProposalContest
     /**
      * Creates a proposal with an empty vote chain.
      *
+     * Time complexity: O(L), where L is the question length.
+     *
      * @param id
      *            positive one-based proposal ID
      * @param question
@@ -43,6 +45,8 @@ public class ProposalContest
     /**
      * Returns the proposal ID.
      *
+     * Time complexity: O(1).
+     *
      * @return one-based proposal ID
      */
     public int getProposalId()
@@ -53,6 +57,8 @@ public class ProposalContest
 
     /**
      * Returns the proposal question.
+     *
+     * Time complexity: O(1).
      *
      * @return proposal question
      */
@@ -65,6 +71,9 @@ public class ProposalContest
     /**
      * Records a vote for this proposal. A voter ID can only be used once.
      * Invalid votes are rejected without changing the stored votes.
+     *
+     * Time complexity: O(V L), where V is the stored vote count and L is the
+     * voter ID length.
      *
      * @param vote
      *            vote to record
@@ -95,6 +104,9 @@ public class ProposalContest
     /**
      * Removes a vote by its trimmed, case-sensitive voter ID.
      *
+     * Time complexity: O(V L), where V is the stored vote count and L is the
+     * voter ID length.
+     *
      * @param voterId
      *            voter ID to remove
      * @return true if a vote was removed, false if none matched
@@ -116,6 +128,9 @@ public class ProposalContest
     /**
      * Recounts the yes votes from the stored ballots.
      *
+     * Time complexity: O(V^2), where V is the stored vote count; indexed
+     * chain lookups repeat traversal.
+     *
      * @return number of yes votes
      */
     public int getYesCount()
@@ -134,6 +149,9 @@ public class ProposalContest
 
     /**
      * Recounts the no votes from the stored ballots.
+     *
+     * Time complexity: O(V^2), where V is the stored vote count; indexed
+     * chain lookups repeat traversal.
      *
      * @return number of no votes
      */
@@ -154,6 +172,8 @@ public class ProposalContest
     /**
      * Returns the number of stored votes.
      *
+     * Time complexity: O(1).
+     *
      * @return vote count
      */
     public int getVoteCount()
@@ -165,6 +185,9 @@ public class ProposalContest
     /**
      * Returns a separate list of the stored votes for saving an election.
      * Changing this list does not change the votes in the proposal.
+     *
+     * Time complexity: O(V^2), where V is the stored vote count; indexed
+     * chain lookups repeat traversal.
      *
      * @return copy of votes, newest first
      */
@@ -182,6 +205,9 @@ public class ProposalContest
     /**
      * Builds the results for this proposal. Yes must exceed no to pass. Reports
      * "No votes recorded" if the proposal is empty.
+     *
+     * Time complexity: O(V^2 + R), where V is the vote count and R is the
+     * result length.
      *
      * @return formatted results with vote counts and outcome
      */

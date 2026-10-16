@@ -18,6 +18,8 @@ public class ElectionSession
     /**
      * Creates an empty election session.
      *
+     * Time complexity: O(L), where L is the session name length.
+     *
      * @param name
      *            session name (maximum 60 characters)
      * @throws IllegalArgumentException
@@ -34,6 +36,9 @@ public class ElectionSession
 
     /**
      * Adds a candidate contest using plurality voting.
+     *
+     * Time complexity: O(K^2 L), where K is the candidate count and L is the
+     * maximum name length.
      *
      * @param position
      *            name of the position
@@ -53,6 +58,8 @@ public class ElectionSession
 
     /**
      * Adds a yes/no proposal and assigns its next one-based ID.
+     *
+     * Time complexity: O(L), where L is the question length.
      *
      * @param question
      *            proposal question (maximum 200 characters)
@@ -78,6 +85,8 @@ public class ElectionSession
     /**
      * Finds a candidate contest by its one-based ID.
      *
+     * Time complexity: O(1).
+     *
      * @param id
      *            candidate contest ID
      * @return the matching contest
@@ -97,6 +106,8 @@ public class ElectionSession
 
     /**
      * Finds a proposal by its one-based ID.
+     *
+     * Time complexity: O(1).
      *
      * @param id
      *            proposal ID
@@ -118,6 +129,8 @@ public class ElectionSession
      * Returns a copy of the candidate contest list in ID order. Changing the
      * list does not change which contests belong to the session.
      *
+     * Time complexity: O(C), where C is the candidate contest count.
+     *
      * @return copy of candidate contests
      */
     public List<CandidateContest> getCandidateContests()
@@ -128,6 +141,8 @@ public class ElectionSession
 
     /**
      * Returns a copy of the proposal list in ID order.
+     *
+     * Time complexity: O(P), where P is the proposal count.
      *
      * @return copy of proposals
      */
@@ -140,6 +155,9 @@ public class ElectionSession
     /**
      * Records one candidate choice in a plurality or majority contest.
      * Candidate names are matched ignoring case and stored canonically.
+     *
+     * Time complexity: O(K^2 L + V L), where K is the candidate count, V is
+     * the contest's vote count, and L is the maximum compared text length.
      *
      * @param id
      *            candidate contest ID
@@ -177,6 +195,9 @@ public class ElectionSession
     /**
      * Records a yes/no vote in the selected proposal.
      *
+     * Time complexity: O(V L), where V is the proposal's vote count and L is
+     * the voter ID length.
+     *
      * @param id
      *            proposal ID
      * @param yes
@@ -203,6 +224,9 @@ public class ElectionSession
     /**
      * Removes a candidate ballot with the given voter ID.
      *
+     * Time complexity: O(V L), where V is the contest's vote count and L is
+     * the voter ID length.
+     *
      * @param id
      *            candidate contest ID
      * @param voterId
@@ -219,6 +243,9 @@ public class ElectionSession
 
     /**
      * Removes a proposal ballot with the given voter ID.
+     *
+     * Time complexity: O(V L), where V is the proposal's vote count and L is
+     * the voter ID length.
      *
      * @param id
      *            proposal ID
@@ -237,6 +264,8 @@ public class ElectionSession
     /**
      * Returns the validated name of this session.
      *
+     * Time complexity: O(1).
+     *
      * @return session name
      */
     public String getName()
@@ -247,6 +276,9 @@ public class ElectionSession
 
     /**
      * Adds a candidate contest using the selected voting method.
+     *
+     * Time complexity: O(K^2 L), where K is the candidate count and L is the
+     * maximum name length.
      *
      * @param position
      *            name of the position
@@ -281,6 +313,9 @@ public class ElectionSession
     /**
      * Records a complete ranked ballot in a ranked-choice contest. Each
      * candidate must be ranked exactly once.
+     *
+     * Time complexity: O(K^3 L + V L), where K is the candidate count, V is
+     * the contest's vote count, and L is the maximum compared text length.
      *
      * @param id
      *            candidate contest ID

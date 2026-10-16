@@ -19,6 +19,8 @@ public class ElectionChain<T>
 
     /**
      * Creates an empty chain.
+     *
+     * Time complexity: O(1).
      */
     public ElectionChain()
     {
@@ -28,7 +30,9 @@ public class ElectionChain<T>
 
 
     /**
-     * Adds an entry at the head of the chain. O(1).
+     * Adds an entry at the head of the chain.
+     *
+     * Time complexity: O(1).
      *
      * @param entry
      *            entry to add
@@ -48,8 +52,11 @@ public class ElectionChain<T>
 
 
     /**
-     * Removes the first entry equal to the given entry. O(N). Other entries,
+     * Removes the first entry equal to the given entry. Other entries,
      * including duplicates, remain in the chain.
+     *
+     * Time complexity: O(N E), where N is the chain length and E is the cost
+     * of one equals comparison.
      *
      * @param entry
      *            entry to find and remove
@@ -94,7 +101,9 @@ public class ElectionChain<T>
 
     /**
      * Checks whether the chain contains an entry equal to the given entry.
-     * O(N).
+     *
+     * Time complexity: O(N E), where N is the chain length and E is the cost
+     * of one equals comparison.
      *
      * @param entry
      *            entry to search for
@@ -124,7 +133,10 @@ public class ElectionChain<T>
 
 
     /**
-     * Counts every entry equal to the given entry, including duplicates. O(N).
+     * Counts every entry equal to the given entry, including duplicates.
+     *
+     * Time complexity: O(N E), where N is the chain length and E is the cost
+     * of one equals comparison.
      *
      * @param entry
      *            entry to count
@@ -156,7 +168,9 @@ public class ElectionChain<T>
 
     /**
      * Retrieves the entry at the given zero-based index. Index 0 is the newest
-     * entry, because entries are added at the head. O(N).
+     * entry, because entries are added at the head.
+     *
+     * Time complexity: O(index + 1), up to O(N) for a chain of N entries.
      *
      * @param index
      *            index of the entry to retrieve
@@ -182,7 +196,9 @@ public class ElectionChain<T>
 
 
     /**
-     * Returns the number of entries in the chain. O(1).
+     * Returns the number of entries in the chain.
+     *
+     * Time complexity: O(1).
      *
      * @return chain size
      */
@@ -193,7 +209,9 @@ public class ElectionChain<T>
 
 
     /**
-     * Checks whether the chain is empty. O(1).
+     * Checks whether the chain is empty.
+     *
+     * Time complexity: O(1).
      *
      * @return true if the chain has no entries
      */
@@ -204,7 +222,9 @@ public class ElectionChain<T>
 
 
     /**
-     * Removes all entries from the chain. O(1).
+     * Removes all entries from the chain.
+     *
+     * Time complexity: O(1), excluding later garbage collection.
      */
     public void clear()
     {

@@ -29,7 +29,11 @@ public final class InputParser
     /** Maximum candidates within one contest. */
     public static final int MAX_CANDIDATES = 20;
 
-    /** This class contains only static methods and cannot be instantiated. */
+    /**
+     * This class contains only static methods and cannot be instantiated.
+     *
+     * Time complexity: O(1).
+     */
     private InputParser()
     {
         // No instance state.
@@ -39,6 +43,8 @@ public final class InputParser
     /**
      * Parses an integer within the given inclusive range. Blank text,
      * non-integers, and numbers outside the range are rejected.
+     *
+     * Time complexity: O(L), where L is the input length.
      *
      * @param s
      *            text entered by the user
@@ -86,6 +92,8 @@ public final class InputParser
      * Validates the two setup counts together. A session must contain at least
      * one candidate contest or one proposal.
      *
+     * Time complexity: O(1).
+     *
      * @param contestCount
      *            number of candidate contests
      * @param proposalCount
@@ -113,6 +121,10 @@ public final class InputParser
      * Matches an entered name to one item in a provided list, ignoring case.
      * Returns the original spelling from the list. Used for candidates and
      * other menus where users type an available option rather than a number.
+     *
+     * Time complexity: O(N^2 L) for random-access options, where N is the
+     * option count and L is the maximum option length; indexed access on
+     * other List types may add cost.
      *
      * @param s
      *            text entered by the user
@@ -176,6 +188,9 @@ public final class InputParser
      * one candidate name per rank, then pass those strings to this method.
      * Every candidate must appear exactly once. Returns canonical spellings.
      *
+     * Time complexity: O(K^3 L), where K is the candidate count and L is the
+     * maximum candidate name length.
+     *
      * @param enteredChoices
      *            names entered in ranked order
      * @param candidates
@@ -216,6 +231,8 @@ public final class InputParser
      * Parses 'yes' or 'no' (case-insensitive) for proposal votes and prompts
      * requiring a yes/no answer.
      *
+     * Time complexity: O(L), where L is the input length.
+     *
      * @param s
      *            entered text
      * @return true for yes and false for no
@@ -243,6 +260,8 @@ public final class InputParser
 
     /**
      * Trims required text and checks its maximum length.
+     *
+     * Time complexity: O(L), where L is the input length.
      *
      * @param s
      *            entered text
@@ -276,6 +295,9 @@ public final class InputParser
     /**
      * Validates a new candidate name and rejects a repeated name, ignoring
      * capitalization and surrounding spaces.
+     *
+     * Time complexity: O(N L), where N is the existing candidate count and L
+     * is the maximum name length.
      *
      * @param s
      *            entered candidate name
@@ -319,6 +341,8 @@ public final class InputParser
     /**
      * Trims an optional location; blank becomes 'Unspecified'.
      *
+     * Time complexity: O(L), where L is the input length.
+     *
      * @param s
      *            entered location
      * @return cleaned location or 'Unspecified'
@@ -350,6 +374,8 @@ public final class InputParser
      * Validates the name of a save file without its extension. Only letters,
      * numbers, spaces, underscores, and hyphens are accepted. The first
      * character must be a letter or number to avoid path names.
+     *
+     * Time complexity: O(L), where L is the input length.
      *
      * @param s
      *            entered save name
