@@ -135,25 +135,25 @@ Before the final deliverable, expand the test suite for any changed APIs and for
 
 ## Work Attribution
 
-| `RapidBallotApp.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `RapidBallotApp.java` | Ethan/Minh | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `InputParser.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `InputParser.java` | Ethan/Minh | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ElectionSession.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integrationw |
+| `ElectionSession.java` | EthanHarrison | Implemented class and methods, used GenAI to help with structure and code integrationw |
 
-| `CandidateContest.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `CandidateContest.java` | Ethan/Harrison | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ProposalContest.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `ProposalContest.java` | Ethan/Harrison | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `CandidateVote.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `CandidateVote.java` | Ethan/Minh | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ProposalVote.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `ProposalVote.java` | Ethan/Minh | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ElectionChain.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `ElectionChain.java` | Ethan/Minh | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `Node.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integrationr |
+| `Node.java` | Ethan/Harrison | Implemented class and methods, used GenAI to help with structure and code integrationr |
 
-| `ElectionStorage.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
+| `ElectionStorage.java` | Ethan/Minh | Implemented class and methods, used GenAI to help with structure and code integration |
 
 | `RapidBallotAppTest.java` | Ethan | Drafted JUnit tests; confirm Eclipse execution and team revisions |
 
@@ -174,5 +174,7 @@ Before the final deliverable, expand the test suite for any changed APIs and for
 | `NodeTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
 | `ElectionStorageTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
+
+Ben has been working on developing the GUI but this has not been implemented into the prototype yet. 
 
 **How GenAI was used:** ChatGPT helped draft and revise Java class implementations, suggest validation and voting logic, generate JUnit test sources, review code behavior, and organize this README. Team members are responsible for reviewing, understanding, testing, correcting, and accurately attributing the submitted work.
