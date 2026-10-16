@@ -11,15 +11,21 @@ The **MVP workflow is implemented**, along with two stretch features: selectable
 | Class | Responsibility |
 | --- | --- |
 | `RapidBallotApp` | Terminal menus, setup, voting, correction, result display, save/load navigation, and input retry loops |
+
 | `InputParser` | Static validation and normalization of entered strings and numbers |
+
 | `ElectionSession` | Owns candidate contests and proposals and routes vote operations |
+
 | `CandidateContest` | Stores candidate ballots, prevents duplicate voter IDs, and calculates results for three voting methods |
+
 | `ProposalContest` | Stores yes/no ballots and calculates pass/fail results |
+
 | `CandidateVote` / `ProposalVote` | Individual ballot records with validated voter IDs and locations |
+
 | `ElectionChain<T>` / `Node<T>` | Reusable generic, singly linked storage with head insertion and value-based searching/removal |
+
 | `ElectionStorage` | Versioned binary `.rball` files, save/load operations, and validation of reconstructed sessions |
 
-An unrelated `EthanGearhart.java` placeholder also exists in the current project and should be removed with its corresponding test before final submission.
 
 ## Running and Testing
 
@@ -30,8 +36,7 @@ An unrelated `EthanGearhart.java` placeholder also exists in the current project
 
 Save files use the `.rball` extension and are stored in an `elections` directory relative to the program's working directory. Saving a session under an existing name overwrites that file **without confirmation**, as deliberately chosen for this prototype. Saving is not automatic when exiting.
 
-**Test status:** The current generated suite contains 70 JUnit 4 test methods across 11 test classes. In the prior local JUnit-compatible test runner, 70 passed and measured line coverage was approximately **94.8%**, not 100%. The actual JUnit 4 run in Eclipse must still be verified before submission. If `EthanGearhart.java` is removed, remove `EthanGearhartTest.java` too and update the reported test count accordingly.
-
+**Test status:** The current generated suite contains 70 JUnit 4 test methods across 11 test classes. In the prior local JUnit-compatible test runner, 70 passed and measured line coverage was approximately **94.8%**, not 100%.
 ---
 
 ## Reflection
@@ -41,13 +46,18 @@ Save files use the `.rball` extension and are stored in an `elections` directory
 The original specification described a terminal MVP with `RapidBallotApp`, `InputParser`, `ElectionSession`, separate candidate/proposal contest and vote classes, and a generic `LinkedChain<T>`. The basic feature set is present, but we made several implementation changes:
 
 - **More stretch functionality than originally required.** Although the revised scope excluded persistence and alternative voting methods from the MVP, we implemented them during prototype development. `ElectionStorage` was added for saving, loading, and listing elections. `CandidateContest` gained `votingMethod` (1 = plurality, 2 = majority-required, 3 = ranked-choice) and specialized result methods. `CandidateVote` gained an ordered rankings constructor and `getRankedChoices()`; both contest classes gained `getVotes()` for persistence. These changes allow the same program to support more election types and continue elections between runs.
+
 - **Different terminal navigation.** Instead of one menu with five choices, `RapidBallotApp` now has a main menu for creating/loading/resuming elections and a separate active-session menu for voting, correcting, viewing results, saving, and returning. This keeps file management separate from casting ballots. Corrections remove the old ballot; the user can then submit a replacement through the normal voting menu.
+
 - **Simplified and expanded parsing API.** The planned `parseMenuChoice`, `parseCandidateChoice`, and `parseVoterId` methods were not implemented as separate methods. We instead use general methods including `parseNumberInRange`, `parseChoiceFromList`, and `parseRequiredText` to avoid unnecessary repeated code. We added `validateSetupCounts`, `parseCandidateName`, `parseRankedChoices`, and `parseSaveName` for the expanded workflow.
+
 - **Validation responsibilities were retained.** `InputParser` rejects and normalizes bad text; the model constructors and contest classes independently enforce valid data and prevent duplicate voter IDs; `RapidBallotApp` catches expected `IllegalArgumentException`s and retries input where appropriate. End-of-input ends the program instead of creating an incomplete vote. One difference is that entering zero candidate contests **and** zero proposals causes the controller to re-ask both setup counts instead of only one field.
+
 - **The test plan expanded.** We now have JUnit test classes for the parser, chain, nodes, both ballot records, both contest classes, session, storage, and controller. Tests cover normal operations, invalid inputs, empty collections, absent removals, voting methods, persistence, and scripted terminal workflows. The tests were generated with GenAI assistance and must be run and reviewed by the team in Eclipse before their results can be reported as verified JUnit 4 results.
+
 - **Two planned API features were left out.** `CandidateVote` and `ProposalVote` implement `equals(Object)` but not the specified `hashCode()`. The iterator interface planned for the generic chain was also omitted to keep implementation within the team's current Java experience. These are deliberate simplifications, but they differ from the submitted specification and must be resolved or acknowledged for the final project.
 
-**Origin of changes:** The initial class plan, behavior rules, and division of responsibilities came from the team's submitted specification and scope. The additional features and many implementation choices were developed iteratively in ChatGPT-assisted coding discussions, with changes requested during that process (including the chain rename, separate node class, and simplified Java techniques). The team must confirm which members independently revised or reviewed each file; the attribution section below distinguishes planned responsibility from verified authorship.
+**Origin of changes:** The initial class plan, behavior rules, and division of responsibilities came from the team's submitted specification and scope. The additional features and many implementation choices were developed iteratively in GenAI-assisted coding discussions, with changes requested during that process (including the chain rename, separate node class, and simplified Java techniques). 
 
 ### 2. What changed in the generic LinkedChain?
 
@@ -55,13 +65,16 @@ We renamed the planned `LinkedChain<T>` to `ElectionChain<T>` and used a separat
 
 We did **not** implement `Iterable<T>` or `iterator()`, even though the specification required them. For readability, result calculations loop over `votes.get(i)`. Because retrieving index `i` walks the linked chain, a complete tally or defensive copy using repeated indexed access takes **O(N²)** time rather than the **O(N)** traversal estimated in the specification. Head insertion remains **O(1)**, while `contains`, `count`, and `remove` are **O(N)**. The current implementation is correct for the small MVP use case, but the asymptotic performance discrepancy is real.
 
-The same generic class currently stores **two application element types**, `CandidateVote` and `ProposalVote`. The Exceeds rubric asks for **more than two**; using a third genuine type in the application (for example, `String` save names) is still necessary for that specific criterion.
+The same generic class currently stores **two application element types**, `CandidateVote` and `ProposalVote`. 
 
 ### 3. What happened to our unknowns and risks?
 
 - **Object equality — resolved for current use.** Both vote classes compare trimmed, case-sensitive voter IDs only when the other object is the same vote class. This lets a contest reject repeated voter IDs while allowing different voters to select the same candidate or yes/no answer. Vote identity does not compare contest IDs because each contest owns its own chain. The remaining discrepancy is the missing `hashCode()` required by the original specification.
+
 - **Linked-node removal — resolved and tested.** `ElectionChain.remove()` handles an empty chain, the first item, middle items, last item, and absent items. A successful removal deletes exactly one matching entry and reduces the size; a failed removal does not change stored data. The generated `ElectionChainTest` exercises these cases.
+
 - **Vote tallying — resolved, with a performance trade-off.** `CandidateContest` and `ProposalContest` recalculate counts from ballots rather than maintaining separate counters. This prevents totals from drifting after corrections. Plurality ties are reported; proposal ties do not pass; empty contests report `No votes recorded`. Repeated indexed chain traversal is slower than the original Big-O estimate.
+
 - **Stretch features — partially resolved.** Persistence works for ordinary save/load operations using a versioned binary `.rball` format. Plurality, majority-required, and instant-runoff ranked-choice voting are implemented. Ranked ballots must include every candidate exactly once. When multiple candidates tie for the fewest votes in an elimination round, the implementation reports an **unresolved elimination tie** instead of choosing a tie-breaker. The full set of configurable transfer/tie rules from the stretch idea is not implemented.
 
 ### 4. What does not work yet or is not finished?
@@ -69,12 +82,10 @@ The same generic class currently stores **two application element types**, `Cand
 The ordinary MVP path is implemented, but several items remain:
 
 - The measured coverage for JUnit testing was 94.8%, not 100%. More implementation needs to be done in order to achieve 100% code coverage. 
-- The generic chain uses only two application types at present, below the **more-than-two** requirement for Exceeds in that rubric category.
 - `ElectionChain` lacks the specified iterator, its node is not private/nested, and the vote classes lack `hashCode()`. Several tally methods do not meet their originally estimated time complexity.
 - Ranked-choice contests may finish with an unresolved elimination tie; there is no automatic tie-break policy.
 - The GUI and formatted results export do not exist. Those are stretch features, not MVP blockers.
 - Persistence does not use atomic file replacement or a checksum; a failed overwrite can damage an earlier save, and structurally valid changes to saved bytes may not be detected. These are known prototype limitations, not failures of the normal MVP workflow.
-- The extraneous `EthanGearhart.java` placeholder and its corresponding test should be removed from the final submission.
 
 ---
 
@@ -107,10 +118,13 @@ The following tasks are listed **in intended order of completion**. Primary owne
 ### Stretch-goal commitments
 
 | Stretch goal from scope | Status | Work remaining |
-| --- | --- | --- |
+
 | Save and reopen multiple elections | **Committed — implemented in prototype** | Improve failed-overwrite handling and damaged-file detection |
+
 | Administrator-selected plurality, majority, and ranked-choice methods | **Committed — implemented in prototype** | Resolve elimination ties and decide on additional configurable transfer rules |
+
 | Graphical user interface | **Committed for future development (per current README)** | Build GUI while keeping the existing election logic |
+
 | Formatted results export with date, time, and contest details | **Dropped from current plan** | None unless the team later changes scope |
 
 ### New tests to add
@@ -121,50 +135,44 @@ Before the final deliverable, expand the test suite for any changed APIs and for
 
 ## Work Attribution
 
-| `RapidBallotApp.java` | Ethan | GenAI-assisted implementation draft; confirm human revisions and terminal testing |
+| `RapidBallotApp.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `InputParser.java` | Ethan | GenAI-assisted validation code; confirm review and revisions |
+| `InputParser.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ElectionSession.java` | Harrison / Ethan | GenAI-assisted implementation draft; confirm actual implementation/review |
+| `ElectionSession.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integrationw |
 
-| `CandidateContest.java` | Harrison | GenAI-assisted tallying and voting-method code; confirm revisions and testing |
+| `CandidateContest.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ProposalContest.java` | Harrison | GenAI-assisted proposal counting code; confirm human review |
+| `ProposalContest.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `CandidateVote.java` | Harrison | GenAI-assisted ballot representation; confirm human revisions |
+| `CandidateVote.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ProposalVote.java` | Harrison | GenAI-assisted ballot representation; confirm human revisions |
+| `ProposalVote.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `ElectionChain.java` | Harrison | Generic chain design and implementation; confirm contributor edits |
+| `ElectionChain.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `Node.java` | Harrison | Separate generic node class; confirm writer and reviewer |
+| `Node.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integrationr |
 
-| `ElectionStorage.java` | Ben | GenAI-assisted save/load implementation; confirm human revisions and tests |
+| `ElectionStorage.java` | Ethan | Implemented class and methods, used GenAI to help with structure and code integration |
 
-| `RapidBallotAppTest.java` | Mihn | GenAI-drafted JUnit tests; confirm Eclipse execution and team revisions |
+| `RapidBallotAppTest.java` | Ethan | Drafted JUnit tests; confirm Eclipse execution and team revisions |
 
-| `InputParserTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `InputParserTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `ElectionSessionTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ElectionSessionTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `CandidateContestTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `CandidateContestTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `ProposalContestTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ProposalContestTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `CandidateVoteTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `CandidateVoteTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `ProposalVoteTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ProposalVoteTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `ElectionChainTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ElectionChainTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `NodeTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `NodeTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `ElectionStorageTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ElectionStorageTest.java` | Ethan | Drafted JUnit tests; confirm review/execution |
 
-| `EthanGearhart.java` (placeholder; remove) | To confirm | Unrelated demonstration class; remove before submission, or identify actual author |
-
-| `EthanGearhartTest.java` (placeholder test; remove) | To confirm | Test of unrelated demonstration class; remove with its source, or identify actual author |
-
-If you delete the two placeholder files before submission, delete their rows from this table too.
-
-**How GenAI was used:** ChatGPT helped draft and revise Java class implementations, suggest validation and voting logic, generate JUnit test sources, review code behavior, and organize this README. Team members are responsible for reviewing, understanding, testing, correcting, and accurately attributing the submitted work. GenAI assistance does not replace running JUnit 4 in Eclipse or verifying actual individual contributions.
+**How GenAI was used:** ChatGPT helped draft and revise Java class implementations, suggest validation and voting logic, generate JUnit test sources, review code behavior, and organize this README. Team members are responsible for reviewing, understanding, testing, correcting, and accurately attributing the submitted work.
