@@ -80,13 +80,13 @@ The ordinary MVP path is implemented, but several items remain:
 
 ## Next Steps
 
-The following tasks are listed **in intended order of completion**. Primary owners are proposed from the division of work in the original specification: Ethan (terminal flow and parsing), Harrison (generic chain and vote logic), Ben (stretch features), and Mihn (testing).
+The following tasks are listed **in intended order of completion**. Primary owners are proposed from the division of work in the original specification: Ethan (terminal flow and parsing), Harrison (generic chain and vote logic), Ben (stretch features), and Minh (testing).
 
 | Order | Remaining task | Primary owner (proposed) | Tests or evidence needed |
 
 | --- | --- | --- | --- |
 
-| 1 | Run the entire JUnit 4 suite in Eclipse; fix any import or runtime failures and verify the MVP menu path, invalid input, and EOF behavior | **Mihn** | Run all test classes with JUnit 4; exercise terminal retries, duplicate voter IDs, corrections, and end-of-input |
+| 1 | Run the entire JUnit 4 suite in Eclipse; fix any import or runtime failures and verify the MVP menu path, invalid input, and EOF behavior | **Minh** | Run all test classes with JUnit 4; exercise terminal retries, duplicate voter IDs, corrections, and end-of-input |
 
 | 2 | Add a **third real element type** to `ElectionChain<T>` in production code, such as storing and retrieving `String` saved-election names; preserve existing behavior | **Harrison** | Extend `ElectionChainTest` and `ElectionStorageTest` with multiple filenames, sorting, and empty-directory cases |
 
@@ -100,7 +100,7 @@ The following tasks are listed **in intended order of completion**. Primary owne
 
 | 7 | Build the planned GUI as an alternative to terminal input while reusing the existing model/session classes | **Ben** | GUI input-validation tests, workflow tests for both vote types, duplicate-ID feedback, and comparison with terminal results |
 
-| 8 | Add and maintain tests for all newly implemented features and check coverage again after each integration step | **Mihn** | New JUnit cases for the third chain type, GUI, persistence errors, and revised ranked-choice rules |
+| 8 | Add and maintain tests for all newly implemented features and check coverage again after each integration step | **Minh** | New JUnit cases for the third chain type, GUI, persistence errors, and revised ranked-choice rules |
 
 | 9 | Update final project documentation, accurate per-file attribution, examples of terminal use, and final submission cleanup | **Ethan** | Cross-check source files, test results, README statements, and rubric requirements |
 
@@ -141,25 +141,25 @@ Before the final deliverable, expand the test suite for any changed APIs and for
 
 | `ElectionStorage.java` | Ben | GenAI-assisted save/load implementation; confirm human revisions and tests |
 
-| `RapidBallotAppTest.java` | Mihn | GenAI-drafted JUnit tests; confirm Eclipse execution and team revisions |
+| `RapidBallotAppTest.java` | Minh | GenAI-drafted JUnit tests; confirm Eclipse execution and team revisions |
 
-| `InputParserTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `InputParserTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `ElectionSessionTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ElectionSessionTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `CandidateContestTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `CandidateContestTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `ProposalContestTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ProposalContestTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `CandidateVoteTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `CandidateVoteTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `ProposalVoteTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ProposalVoteTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `ElectionChainTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ElectionChainTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `NodeTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `NodeTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
-| `ElectionStorageTest.java` | Mihn | GenAI-drafted JUnit tests; confirm review/execution |
+| `ElectionStorageTest.java` | Minh | GenAI-drafted JUnit tests; confirm review/execution |
 
 | `EthanGearhart.java` (placeholder; remove) | To confirm | Unrelated demonstration class; remove before submission, or identify actual author |
 
