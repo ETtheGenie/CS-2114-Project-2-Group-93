@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-RapidBallot is a Java terminal application for small elections in clubs, classrooms, and student organizations. An administrator creates a named election session with candidate contests and/or yes/no proposals. Users can cast ballots, remove an incorrect ballot by voter ID, and view totals and results. The application uses one generic `ElectionChain<T>` implementation to store both `CandidateVote` and `ProposalVote` records.
+RapidBallot is a Java terminal application for small elections in clubs, classrooms, and student organizations. An administrator creates a named election session with candidate contests and/or yes/no proposals. Users can cast ballots, remove an incorrect ballot by voter ID, and view totals and results. The application uses the same generic ElectionChain<T> implementation to store and retrieve three different element types: CandidateVote for candidate ballots, ProposalVote for proposal ballots, and String for saved election filenames.
 
 The **MVP workflow is implemented**, along with two stretch features: selectable voting methods (plurality, majority-required, and ranked choice) and saving/loading multiple election sessions. A graphical interface and formatted results export are not implemented.
 
@@ -65,7 +65,7 @@ We renamed the planned `LinkedChain<T>` to `ElectionChain<T>` and used a separat
 
 We did **not** implement `Iterable<T>` or `iterator()`, even though the specification required them. For readability, result calculations loop over `votes.get(i)`. Because retrieving index `i` walks the linked chain, a complete tally or defensive copy using repeated indexed access takes **O(N²)** time rather than the **O(N)** traversal estimated in the specification. Head insertion remains **O(1)**, while `contains`, `count`, and `remove` are **O(N)**. The current implementation is correct for the small MVP use case, but the asymptotic performance discrepancy is real.
 
-The same generic class currently stores **two application element types**, `CandidateVote` and `ProposalVote`. 
+To satisfy the Exceeds requirement for generic class reuse, we expanded ElectionChain<T> to store three different element types: CandidateVote, ProposalVote, and String. The third type was introduced in ElectionStorage.listSavedElections(), where saved election filenames are temporarily stored in ElectionChain<String> and retrieved through its public get() method before being sorted alphabetically. This change required no modifications to the generic chain itself and demonstrates that the same implementation can support different types of application data.
 
 ### 3. What happened to our unknowns and risks?
 
@@ -99,7 +99,7 @@ The following tasks are listed **in intended order of completion**. Primary owne
 
 | 1 | Run the entire JUnit 4 suite in Eclipse; fix any import or runtime failures and verify the MVP menu path, invalid input, and EOF behavior | **Mihn** | Run all test classes with JUnit 4; exercise terminal retries, duplicate voter IDs, corrections, and end-of-input |
 
-| 2 | Add a **third real element type** to `ElectionChain<T>` in production code, such as storing and retrieving `String` saved-election names; preserve existing behavior | **Harrison** | Extend `ElectionChainTest` and `ElectionStorageTest` with multiple filenames, sorting, and empty-directory cases |
+| 2 | Verify that the newly implemented ElectionChain<String> functionality correctly stores and retrieves saved election filenames without changing the behavior of listSavedElections() | **Harrison** | Extend `ElectionChainTest` and `ElectionStorageTest` with multiple filenames, sorting, and empty-directory cases |
 
 | 3 | Review specification compatibility: `LinkedChain` naming, separate `Node`, omitted iterator, missing `hashCode()`, and actual vs. promised Big-O; implement necessary fixes or document approved deviations | **Harrison** | Add equality/hash-code consistency tests if implemented; iterator/empty/end tests if implemented; rerun chain and contest tests|
 
@@ -129,7 +129,7 @@ The following tasks are listed **in intended order of completion**. Primary owne
 
 ### New tests to add
 
-Before the final deliverable, expand the test suite for any changed APIs and for each unfinished feature: a third generic-chain type, actual Eclipse/JUnit 4 execution, iteration/hash-code behavior if added, save failures/corruption, ranked-choice tie policies, and GUI validation. Every new public method should have a normal case and an applicable bad-input or boundary case, following the test plan in the specification.
+Before the final deliverable, expand the test suite for any changed APIs and for each unfinished feature: actual Eclipse/JUnit 4 execution, iteration/hash-code behavior if added, save failures/corruption, ranked-choice tie policies, and GUI validation. Every new public method should have a normal case and an applicable bad-input or boundary case, following the test plan in the specification.
 
 ---
 
