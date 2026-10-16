@@ -1,194 +1,55 @@
+
 package BallotApp;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * One candidate election for a named position.
-
- * Stores immutable CandidateVote objects in a generic LinkedChain. Candidate
- * names are canonical and distinct ignoring case. Duplicate voter IDs within
- * this contest are forbidden, while different IDs may select the same
- * candidate. Results are derived from stored ballots.
-
+ * One candidate election for a named position. Stores votes in an ElectionChain
+ * and prevents duplicate voter IDs. Results are calculated from the stored
+ * votes.
  */
 public class CandidateContest
 {
-
     private int contestId;
     private String position;
     private ArrayList<String> candidates;
     private ElectionChain<CandidateVote> votes;
 
-    /**
-     * STRETCH: Administrator-selected vote-counting method for this contest. 1
-     * = plurality, 2 = majority required, 3 = ranked choice.
-     */
+    /** 1 = plurality, 2 = majority required, 3 = ranked choice. */
     private int votingMethod;
 
     /**
-     * Creates a plurality contest (original MVP constructor).
-     *
-     * @param id
-     *            positive one-based contest ID
-     * @param position
-     *            required position name (max 60 characters)
-     * @param names
-     *            1-20 unique nonblank candidate names
-     * @throws IllegalArgumentException
-     *             if any configuration is invalid
-     */
-    public CandidateContest(int id, String position, List<String> names)
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns the one-based contest ID.
-     *
-     * @return contest ID
-     */
-    public int getContestId()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns this contest's position name.
-     *
-     * @return position name
-     */
-    public String getPosition()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns a defensive copy of canonical candidate names.
-     *
-     * @return candidates in administrator-specified order
-     */
-    public List<String> getCandidates()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Resolves a candidate name ignoring case to its canonical spelling.
-     *
-     * @param s
-     *            entered candidate name
-     * @return the corresponding canonical candidate name
-     * @throws IllegalArgumentException
-     *             if s does not match a candidate
-     */
-    public String resolveCandidateName(String s)
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Validates and records one candidate ballot. Its contest ID must match
-     * this contest; candidate names must be canonical, and the voter ID must
-     * not already appear in this contest's chain. No mutation occurs if any
-     * check fails.
-     *
-     * @param vote
-     *            ballot to add
-     * @throws IllegalArgumentException
-     *             for invalid or duplicate ballots
-     */
-    public void recordVote(CandidateVote vote)
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Removes one ballot for a given voter ID; valid IDs are trimmed but
-     * case-sensitive. An absent ID leaves the chain unchanged.
-     *
-     * @param voterId
-     *            voter ID to locate
-     * @return true if a ballot was removed; false if none matched
-     */
-    public boolean removeVote(String voterId)
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Recalculates counts from ballots. Includes zero totals for every
-     * configured candidate and preserves candidate insertion order. STRETCH:
-     * For ranked-choice contests this reports FIRST-choice totals; subsequent
-     * elimination rounds are computed for the result summary.
-     *
-     * @return canonical candidate name -> count
-     */
-    public Map<String, Integer> tallyVotes()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * MVP: Returns the plurality result (vote totals, winner/tie, or "No votes
-     * recorded"). The controller calls one of the specific STRETCH result
-     * methods below when showing actual election results.
-     *
-     * @return human-readable election result
-     */
-    public String getResultSummary()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * Returns the number of stored candidate ballots.
-     *
-     * @return chain size
-     */
-    public int getVoteCount()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * STRETCH: Returns a defensive snapshot of every stored ballot. Persistence
-     * uses this read-only view instead of accessing the private LinkedChain
-     * directly. The returned list can be changed without modifying the stored
-     * chain; each CandidateVote is immutable.
-     *
-     * @return copy of stored ballots, newest first
-     */
-    public List<CandidateVote> getVotes()
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-
-    /**
-     * STRETCH: Creates a contest with a numbered voting method.
+     * Creates a candidate contest using plurality voting.
      *
      * @param id
      *            positive contest ID
      * @param position
-     *            position name
+     *            required position name
      * @param names
-     *            canonical candidate names
+     *            1-20 unique candidate names
+     */
+    public CandidateContest(int id, String position, List<String> names)
+    {
+        this(id, position, names, 1);
+    }
+
+
+    /**
+     * Creates a contest with the selected voting method.
+     *
+     * @param id
+     *            positive contest ID
+     * @param position
+     *            required position name (maximum 60 characters)
+     * @param names
+     *            1-20 unique candidate names
      * @param method
      *            1 = plurality, 2 = majority required, 3 = ranked choice
      * @throws IllegalArgumentException
-     *             if the configuration is invalid
+     *             if any input is invalid
      */
     public CandidateContest(
         int id,
@@ -196,53 +57,405 @@ public class CandidateContest
         List<String> names,
         int method)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (id <= 0)
+        {
+            throw new IllegalArgumentException("Contest ID must be positive.");
+        }
+        if (method < 1 || method > 3)
+        {
+            throw new IllegalArgumentException(
+                "Voting method must be 1, 2, or 3.");
+        }
+        if (names == null || names.size() < 1
+            || names.size() > InputParser.MAX_CANDIDATES)
+        {
+            throw new IllegalArgumentException(
+                "A contest needs 1 to 20 candidates.");
+        }
+
+        this.contestId = id;
+        this.position = InputParser
+            .parseRequiredText(position, InputParser.MAX_NAME_LENGTH);
+        this.candidates = new ArrayList<String>();
+
+        for (String name : names)
+        {
+            // This also rejects blank, overly long, and repeated names.
+            String validName = InputParser.parseCandidateName(name, candidates);
+            candidates.add(validName);
+        }
+
+        this.votingMethod = method;
+        this.votes = new ElectionChain<CandidateVote>();
+    }
+
+
+    /** @return the contest ID */
+    public int getContestId()
+    {
+        return contestId;
+    }
+
+
+    /** @return the position name */
+    public String getPosition()
+    {
+        return position;
+    }
+
+
+    /** @return a copy of the candidate names in setup order */
+    public List<String> getCandidates()
+    {
+        return new ArrayList<String>(candidates);
     }
 
 
     /**
-     * STRETCH: Returns the counting method chosen for this contest.
+     * Finds the stored spelling of a candidate name, ignoring case.
      *
-     * @return 1 for plurality, 2 for majority required, 3 for ranked choice
+     * @param s
+     *            entered candidate name
+     * @return matching stored candidate name
+     * @throws IllegalArgumentException
+     *             if no candidate matches
      */
+    public String resolveCandidateName(String s)
+    {
+        return InputParser.parseChoiceFromList(s, candidates);
+    }
+
+
+    /**
+     * Adds one valid ballot, rejecting a repeated voter ID. Single-choice
+     * ballots must be used for methods 1 and 2. Ranked-choice ballots must rank
+     * every candidate exactly once.
+     *
+     * @param vote
+     *            ballot to record
+     * @throws IllegalArgumentException
+     *             if the ballot is invalid
+     */
+    public void recordVote(CandidateVote vote)
+    {
+        if (vote == null)
+        {
+            throw new IllegalArgumentException("Vote cannot be null.");
+        }
+        if (vote.getContestId() != contestId)
+        {
+            throw new IllegalArgumentException(
+                "Vote belongs to another contest.");
+        }
+
+        List<String> rankings = vote.getRankedChoices();
+        if (votingMethod == 3)
+        {
+            // Check the full ranking and its exact canonical spelling.
+            List<String> validRankings =
+                InputParser.parseRankedChoices(rankings, candidates);
+            for (int i = 0; i < rankings.size(); i++)
+            {
+                if (!rankings.get(i).equals(validRankings.get(i)))
+                {
+                    throw new IllegalArgumentException(
+                        "Use the stored candidate names in the ranking.");
+                }
+            }
+        }
+        else
+        {
+            if (rankings.size() != 1)
+            {
+                throw new IllegalArgumentException(
+                    "This contest accepts one candidate per vote.");
+            }
+            String canonicalName =
+                resolveCandidateName(vote.getCandidateName());
+            if (!vote.getCandidateName().equals(canonicalName))
+            {
+                throw new IllegalArgumentException(
+                    "Use the stored candidate name.");
+            }
+        }
+
+        if (votes.contains(vote))
+        {
+            throw new IllegalArgumentException("Voter ID already recorded.");
+        }
+        votes.add(vote);
+    }
+
+
+    /**
+     * Removes the vote for a trimmed, case-sensitive voter ID.
+     *
+     * @param voterId
+     *            ID to remove
+     * @return true if removed, false if no matching vote exists
+     */
+    public boolean removeVote(String voterId)
+    {
+        String id = InputParser
+            .parseRequiredText(voterId, InputParser.MAX_VOTER_ID_LENGTH);
+
+        // CandidateVote.equals() compares only the voter ID.
+        CandidateVote searchVote =
+            new CandidateVote(contestId, candidates.get(0), id, "");
+        return votes.remove(searchVote);
+    }
+
+
+    /**
+     * Counts first-choice votes, including zero for candidates with no votes.
+     * Preserves the order in which candidates were added.
+     *
+     * @return candidate names mapped to their vote counts
+     */
+    public Map<String, Integer> tallyVotes()
+    {
+        Map<String, Integer> counts = new LinkedHashMap<String, Integer>();
+        for (String name : candidates)
+        {
+            counts.put(name, 0);
+        }
+
+        for (int i = 0; i < votes.size(); i++)
+        {
+            String name = votes.get(i).getCandidateName();
+            counts.put(name, counts.get(name) + 1);
+        }
+        return counts;
+    }
+
+
+    /** @return the original MVP plurality results */
+    public String getResultSummary()
+    {
+        return getPluralityResultSummary();
+    }
+
+
+    /** @return the number of stored ballots */
+    public int getVoteCount()
+    {
+        return votes.size();
+    }
+
+
+    /** @return a defensive copy of all ballots, newest first */
+    public List<CandidateVote> getVotes()
+    {
+        List<CandidateVote> copy = new ArrayList<CandidateVote>();
+        for (int i = 0; i < votes.size(); i++)
+        {
+            copy.add(votes.get(i));
+        }
+        return copy;
+    }
+
+
+    /** @return 1 for plurality, 2 for majority, 3 for ranked choice */
     public int getVotingMethod()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return votingMethod;
     }
 
 
     /**
-     * STRETCH: Produces results under plurality rules: the candidate with the
-     * largest count wins, with a tie if leaders are equal.
+     * Reports first-choice totals and the highest-scoring candidate or tie.
      *
-     * @return formatted plurality result
+     * @return formatted plurality results
      */
     public String getPluralityResultSummary()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        String result = getTotalsText() + "\nVoting method: Plurality";
+        if (votes.isEmpty())
+        {
+            return result + "\nNo votes recorded";
+        }
+
+        Map<String, Integer> counts = tallyVotes();
+        int highest = -1;
+        List<String> leaders = new ArrayList<String>();
+
+        for (String name : candidates)
+        {
+            int count = counts.get(name);
+            if (count > highest)
+            {
+                highest = count;
+                leaders.clear();
+                leaders.add(name);
+            }
+            else if (count == highest)
+            {
+                leaders.add(name);
+            }
+        }
+
+        if (leaders.size() == 1)
+        {
+            return result + "\nWinner: " + leaders.get(0);
+        }
+
+        result += "\nTie between: ";
+        for (int i = 0; i < leaders.size(); i++)
+        {
+            if (i > 0)
+            {
+                result += ", ";
+            }
+            result += leaders.get(i);
+        }
+        return result;
     }
 
 
     /**
-     * STRETCH: Produces results requiring more than half of all valid ballots
-     * for a winner; otherwise reports no majority winner.
+     * Reports a winner only when a candidate has more than half the votes.
      *
-     * @return formatted majority-required result
+     * @return formatted majority-required results
      */
     public String getMajorityResultSummary()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        String result = getTotalsText() + "\nVoting method: Majority required";
+        if (votes.isEmpty())
+        {
+            return result + "\nNo votes recorded";
+        }
+
+        Map<String, Integer> counts = tallyVotes();
+        for (String name : candidates)
+        {
+            if (counts.get(name) > votes.size() / 2)
+            {
+                return result + "\nWinner: " + name;
+            }
+        }
+        return result + "\nNo majority winner";
     }
 
 
     /**
-     * STRETCH: Runs instant-runoff elimination/transfer rounds and reports the
-     * result, including any unresolved elimination tie.
+     * Runs instant-runoff voting using each ballot's ranked preferences. The
+     * lowest candidate is removed each round, and ballots transfer to the next
+     * remaining candidate. If several candidates are tied for last place, the
+     * election reports an unresolved elimination tie.
      *
-     * @return formatted ranked-choice result
+     * @return round-by-round ranked-choice results
      */
     public String getRankedChoiceResultSummary()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        String result = "Contest " + contestId + ": " + position
+            + "\nVoting method: Ranked choice";
+        if (votes.isEmpty())
+        {
+            return result + "\nNo votes recorded";
+        }
+
+        List<String> remaining = new ArrayList<String>(candidates);
+        int round = 1;
+
+        while (remaining.size() > 0)
+        {
+            int[] counts = new int[remaining.size()];
+            int countedBallots = 0;
+
+            // Count each ballot for its highest-ranked remaining candidate.
+            for (int i = 0; i < votes.size(); i++)
+            {
+                List<String> rankings = votes.get(i).getRankedChoices();
+                for (String choice : rankings)
+                {
+                    int index = remaining.indexOf(choice);
+                    if (index != -1)
+                    {
+                        counts[index]++;
+                        countedBallots++;
+                        break;
+                    }
+                }
+            }
+
+            result += "\nRound " + round + ":";
+            for (int i = 0; i < remaining.size(); i++)
+            {
+                result += "\n" + remaining.get(i) + ": " + counts[i];
+            }
+
+            if (countedBallots == 0)
+            {
+                return result + "\nNo active ballots remaining";
+            }
+
+            // A candidate with more than half the active votes wins.
+            for (int i = 0; i < remaining.size(); i++)
+            {
+                if (counts[i] > countedBallots / 2)
+                {
+                    return result + "\nWinner: " + remaining.get(i);
+                }
+            }
+
+            int lowest = counts[0];
+            int lowestIndex = 0;
+            int lowestTies = 1;
+            for (int i = 1; i < counts.length; i++)
+            {
+                if (counts[i] < lowest)
+                {
+                    lowest = counts[i];
+                    lowestIndex = i;
+                    lowestTies = 1;
+                }
+                else if (counts[i] == lowest)
+                {
+                    lowestTies++;
+                }
+            }
+
+            // We cannot choose whom to eliminate without a tie-break rule.
+            if (lowestTies > 1)
+            {
+                result += "\nUnresolved elimination tie between: ";
+                boolean first = true;
+                for (int i = 0; i < remaining.size(); i++)
+                {
+                    if (counts[i] == lowest)
+                    {
+                        if (!first)
+                        {
+                            result += ", ";
+                        }
+                        result += remaining.get(i);
+                        first = false;
+                    }
+                }
+                return result;
+            }
+
+            result += "\nEliminated: " + remaining.get(lowestIndex);
+            remaining.remove(lowestIndex);
+            round++;
+        }
+        return result + "\nNo winner";
+    }
+
+
+    /**
+     * Builds the heading and first-choice totals shared by two result methods.
+     *
+     * @return contest heading followed by all candidate totals
+     */
+    private String getTotalsText()
+    {
+        String result = "Contest " + contestId + ": " + position;
+        Map<String, Integer> counts = tallyVotes();
+        for (String name : candidates)
+        {
+            result += "\n" + name + ": " + counts.get(name);
+        }
+        return result;
     }
 }
