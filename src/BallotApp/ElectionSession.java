@@ -1,3 +1,4 @@
+
 package BallotApp;
 
 import java.util.ArrayList;
@@ -5,137 +6,152 @@ import java.util.List;
 
 /**
  * One named election session containing candidate contests and proposals.
- * <p>
- * Contest/proposal IDs are fixed one-based list positions. The session owns
- * creation, lookup, and routing for voting and correction; individual contests
- * enforce their own vote rules. No contest deletion is supported.
- * </p>
+ * Contest and proposal IDs are fixed, one-based positions in their lists. The
+ * session creates contests and routes votes and corrections to them.
  */
 public class ElectionSession
 {
-
     private String name;
     private ArrayList<CandidateContest> candidateContests;
     private ArrayList<ProposalContest> proposals;
 
     /**
-     * Creates an empty session with a validated, nonblank name (max 60).
+     * Creates an empty election session.
      *
      * @param name
-     *            election session name
+     *            session name (maximum 60 characters)
      * @throws IllegalArgumentException
-     *             if name is invalid
+     *             if the name is invalid
      */
     public ElectionSession(String name)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        this.name =
+            InputParser.parseRequiredText(name, InputParser.MAX_NAME_LENGTH);
+        candidateContests = new ArrayList<CandidateContest>();
+        proposals = new ArrayList<ProposalContest>();
     }
 
 
     /**
-     * Adds a plurality contest with 1-20 distinct candidate names. The original
-     * MVP signature defaults to plurality for compatibility.
+     * Adds a candidate contest using plurality voting.
      *
      * @param position
-     *            contest/position name
+     *            name of the position
      * @param names
-     *            canonical candidate names
-     * @return newly added contest with its one-based ID
+     *            candidate names
+     * @return the new contest
      * @throws IllegalArgumentException
-     *             for invalid setup or capacity
+     *             for invalid setup or too many contests
      */
     public
         CandidateContest
         addCandidateContest(String position, List<String> names)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return addCandidateContest(position, names, 1);
     }
 
 
     /**
-     * Adds one yes/no proposal, assigning the next one-based ID.
+     * Adds a yes/no proposal and assigns its next one-based ID.
      *
      * @param question
-     *            proposal question (max 200 characters)
-     * @return newly created proposal
+     *            proposal question (maximum 200 characters)
+     * @return the new proposal
      * @throws IllegalArgumentException
-     *             for an invalid question or capacity
+     *             for an invalid question or too many proposals
      */
     public ProposalContest addProposal(String question)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (proposals.size() >= InputParser.MAX_PROPOSALS)
+        {
+            throw new IllegalArgumentException(
+                "Maximum number of proposals reached.");
+        }
+
+        ProposalContest proposal =
+            new ProposalContest(proposals.size() + 1, question);
+        proposals.add(proposal);
+        return proposal;
     }
 
 
     /**
-     * Retrieves a candidate contest using its one-based ID.
+     * Finds a candidate contest by its one-based ID.
      *
      * @param id
      *            candidate contest ID
-     * @return matching contest
+     * @return the matching contest
      * @throws IllegalArgumentException
-     *             for a nonexistent ID
+     *             if the ID does not exist
      */
     public CandidateContest getCandidateContest(int id)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (id < 1 || id > candidateContests.size())
+        {
+            throw new IllegalArgumentException(
+                "Invalid candidate contest ID: " + id);
+        }
+        return candidateContests.get(id - 1);
     }
 
 
     /**
-     * Retrieves a proposal using its one-based ID.
+     * Finds a proposal by its one-based ID.
      *
      * @param id
      *            proposal ID
-     * @return matching proposal
+     * @return the matching proposal
      * @throws IllegalArgumentException
-     *             for a nonexistent ID
+     *             if the ID does not exist
      */
     public ProposalContest getProposal(int id)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (id < 1 || id > proposals.size())
+        {
+            throw new IllegalArgumentException("Invalid proposal ID: " + id);
+        }
+        return proposals.get(id - 1);
     }
 
 
     /**
-     * Returns a defensive copy of the candidate contest list. Changing the
-     * returned list cannot alter session membership.
+     * Returns a copy of the candidate contest list in ID order. Changing the
+     * list does not change which contests belong to the session.
      *
-     * @return shallow copy of contests in ID order
+     * @return copy of candidate contests
      */
     public List<CandidateContest> getCandidateContests()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return new ArrayList<CandidateContest>(candidateContests);
     }
 
 
     /**
-     * Returns a defensive copy of the proposal list.
+     * Returns a copy of the proposal list in ID order.
      *
-     * @return shallow copy of proposals in ID order
+     * @return copy of proposals
      */
     public List<ProposalContest> getProposals()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return new ArrayList<ProposalContest>(proposals);
     }
 
 
     /**
-     * Records a single-choice candidate ballot in the selected contest.
-     * Resolves the canonical candidate name; repeated voter IDs in the same
-     * contest are rejected without changing existing votes.
+     * Records one candidate choice in a plurality or majority contest.
+     * Candidate names are matched ignoring case and stored canonically.
      *
      * @param id
      *            candidate contest ID
      * @param candidate
-     *            chosen candidate name
+     *            candidate name entered by the voter
      * @param voterId
      *            required voter ID
      * @param location
      *            optional location
-     * @return accepted immutable vote record
+     * @return the recorded vote
      * @throws IllegalArgumentException
-     *             for invalid data or duplicate ID
+     *             if the vote or contest is invalid
      */
     public CandidateVote recordCandidateVote(
         int id,
@@ -143,7 +159,18 @@ public class ElectionSession
         String voterId,
         String location)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        CandidateContest contest = getCandidateContest(id);
+        if (contest.getVotingMethod() == 3)
+        {
+            throw new IllegalArgumentException(
+                "Ranked-choice contests require a ranked ballot.");
+        }
+
+        String validName = contest.resolveCandidateName(candidate);
+        CandidateVote vote =
+            new CandidateVote(id, validName, voterId, location);
+        contest.recordVote(vote);
+        return vote;
     }
 
 
@@ -158,94 +185,112 @@ public class ElectionSession
      *            required voter ID
      * @param location
      *            optional location
-     * @return accepted immutable vote record
+     * @return the recorded vote
      * @throws IllegalArgumentException
-     *             for invalid data or duplicate ID
+     *             if the vote or proposal is invalid
      */
     public
         ProposalVote
         recordProposalVote(int id, boolean yes, String voterId, String location)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        ProposalContest proposal = getProposal(id);
+        ProposalVote vote = new ProposalVote(id, yes, voterId, location);
+        proposal.recordVote(vote);
+        return vote;
     }
 
 
     /**
-     * Removes a candidate ballot with the given voter ID, if present.
+     * Removes a candidate ballot with the given voter ID.
      *
      * @param id
      *            candidate contest ID
      * @param voterId
      *            voter ID to remove (trimmed, case-sensitive)
-     * @return true if exactly one record was removed; otherwise false
+     * @return true if removed; false if no matching vote exists
+     * @throws IllegalArgumentException
+     *             if the contest or voter ID is invalid
      */
     public boolean correctCandidateVote(int id, String voterId)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return getCandidateContest(id).removeVote(voterId);
     }
 
 
     /**
-     * Removes a proposal vote with the given voter ID, if present.
+     * Removes a proposal ballot with the given voter ID.
      *
      * @param id
      *            proposal ID
      * @param voterId
      *            voter ID to remove (trimmed, case-sensitive)
-     * @return true if exactly one record was removed; otherwise false
+     * @return true if removed; false if no matching vote exists
+     * @throws IllegalArgumentException
+     *             if the proposal or voter ID is invalid
      */
     public boolean correctProposalVote(int id, String voterId)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return getProposal(id).removeVote(voterId);
     }
 
 
     /**
-     * Returns the session's validated name.
+     * Returns the validated name of this session.
      *
      * @return session name
      */
     public String getName()
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return name;
     }
 
 
     /**
-     * STRETCH: Adds a contest configured for a specific voting method. The
-     * method remains fixed for the contest once votes are recorded.
+     * Adds a candidate contest using the selected voting method.
      *
      * @param position
-     *            contest/position name
+     *            name of the position
      * @param names
-     *            allowed candidate names
+     *            candidate names
      * @param method
-     *            voting method (1 = plurality, 2 = majority, 3 = ranked)
-     * @return newly added contest
+     *            1 = plurality, 2 = majority required, 3 = ranked choice
+     * @return the new contest
      * @throws IllegalArgumentException
-     *             for invalid setup
+     *             for invalid setup or too many contests
      */
     public
         CandidateContest
         addCandidateContest(String position, List<String> names, int method)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (candidateContests.size() >= InputParser.MAX_CONTESTS)
+        {
+            throw new IllegalArgumentException(
+                "Maximum number of candidate contests reached.");
+        }
+
+        CandidateContest contest = new CandidateContest(
+            candidateContests.size() + 1,
+            position,
+            names,
+            method);
+        candidateContests.add(contest);
+        return contest;
     }
 
 
     /**
-     * STRETCH: Records an ordered candidate ranking for an IRV contest. Every
-     * candidate must appear exactly once in the rankings.
+     * Records a complete ranked ballot in a ranked-choice contest. Each
+     * candidate must be ranked exactly once.
      *
      * @param id
      *            candidate contest ID
      * @param rankings
-     *            preferred candidates, first choice first
+     *            names from first choice to last choice
      * @param voterId
      *            required voter ID
      * @param location
      *            optional location
-     * @return accepted immutable vote record
+     * @return the recorded ballot
      * @throws IllegalArgumentException
      *             for invalid rankings or duplicate ID
      */
@@ -255,6 +300,18 @@ public class ElectionSession
         String voterId,
         String location)
     {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        CandidateContest contest = getCandidateContest(id);
+        if (contest.getVotingMethod() != 3)
+        {
+            throw new IllegalArgumentException(
+                "This contest accepts only a single candidate choice.");
+        }
+
+        List<String> validRankings =
+            InputParser.parseRankedChoices(rankings, contest.getCandidates());
+        CandidateVote vote =
+            new CandidateVote(id, validRankings, voterId, location);
+        contest.recordVote(vote);
+        return vote;
     }
 }
