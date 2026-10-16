@@ -56,3 +56,29 @@ Compilation checks Java syntax and type references only; running the app will th
 ## Source-of-truth policy
 
 MVP APIs follow the submitted specification. New stretch features are proposals and can be revised before writing implementation logic. Individual class/method implementations should replace stub bodies without changing signatures unless agreed first.
+
+
+
+
+## Next Steps:
+
+The model, contest, session, and storage layers are implemented, and everything compiles under Java. Two hashCode warnings come up but can be fixed easily. And our stretch goal of  a GUI for our project will be committed in the future.
+
+What’s left for the MVP: Polishing our classes and making sure everything runs as intended , Every signature from the spec (pp. 5-7) matches, making sure No menu path reaches an UnsupportedOperationException
+
+Small cleanups:
+
+-Delete EthanGearhart.java. Placeholder that prints “Ethan exists.”
+-Add hashCode() to CandidateVote and ProposalVote to clear the compiler warnings.
+-Decide whether our ElectionChain + top-level Node setup is acceptable.
+
+Stretch goals:
+Implementing a GUI for our entire app. 
+The voting methods and ElectionStorage already have been written. What remains is the controller side:
+
+Testing: A coverage check to find branch gaps, Testing for our GUI when it gets implemented
+
+Documentation and polish
+-Rewrite the README. It still describes an unimplemented skeleton, LinkedChain, and the default package, and we now use package BallotApp;.
+-Record the decisions we actually implemented: IRV tie policy, full vs. partial rankings, and save format and overwrite behavior
+-Remove STRETCH and “Not implemented” wording from the Javadoc and add a “How to run” section with sample output
