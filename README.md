@@ -51,14 +51,64 @@ These files are in the **default Java package** (no `package` declaration) becau
 javac *.java
 ```
 
-Compilation checks Java syntax and type references only; running the app will throw `UnsupportedOperationException` until methods are implemented. The stub classes were compiled successfully with Java 21 and contain no syntax errors.
+Compilation checks Java syntax and type references only; running the app will throw `UnsupportedOperationException` until methods are implemented. 
+The stub classes were compiled successfully with Java 21 and contain no syntax errors.
 
 ## Source-of-truth policy
 
-MVP APIs follow the submitted specification. New stretch features are proposals and can be revised before writing implementation logic. Individual class/method implementations should replace stub bodies without changing signatures unless agreed first.
+MVP APIs follow the submitted specification. New stretch features are proposals and can be revised before writing implementation logic. Individual class/method 
+implementations should replace stub bodies without changing signatures unless agreed first.
 
 
+## Reflection
+**What changed from our specification**
 
+Our eight spec classes are all there, but we changed some things along the way.
+
+Scope grew. We added ElectionStorage (save/load) and ranked-choice voting, even though our revised scope listed both as excluded. This added a votingMethod field 
+on CandidateContest, a ranked-ballot constructor on CandidateVote, and getVotes() on both contests.
+Menus. We built a two-level menu (main menu with create/load/resume/exit, then a session menu that includes save) instead of the spec's single five-option menu.
+InputParser. We never built parseMenuChoice, parseCandidateChoice, or parseVoterId. Menu choices use parseNumberInRange, candidate names use parseChoiceFromList, 
+and voter IDs use parseRequiredText(s, 40). We also added validateSetupCounts, parseCandidateName, parseRankedChoices, and parseSaveName.
+Validation still works the way we planned: the parser rejects bad text, the app catches the exception and re-prompts only that field, and the model classes re-check their own invariants.
+Missing hashCode(). CandidateVote and ProposalVote override equals() but not hashCode(), which the spec requires. The compiler warns about both.
+Tests. Our test plan is not implemented. 
+
+**What changed in the LinkedChain**
+
+We renamed it ElectionChain<T> and generalized the starter. add(T) inserts at the head in O(1) and rejects null, and we added remove, contains, count, get, size, isEmpty, and clear as specified. The integer-only code and demo main() are gone.
+
+We made two shortcuts. Node<T> is still a separate public top-level class instead of the private nested one the spec called for, and we never wrote Iterable<T>/iterator(). 
+Because there is no iterator, our tally and counting code loops over get(i), which makes those methods O(N²) rather than the O(N) we promised. 
+Results are still correct, but the Big-O in our spec isn't met. We kept head insertion, equals()-based matching, 
+and the rule that the chain contains no election logic. Totals are always recomputed from the chain.
+
+**What happened to our unknowns**
+
+Our scope listed three unknowns, plus four stretch goals.
+
+Object equality: figured out. ElectionChain compares with equals(). CandidateVote and ProposalVote compare only the trimmed, case-sensitive voter ID (and only against their own class), 
+so the contest is not part of equality. Each contest has its own chain, so "same contest" is already guaranteed, and a repeated voter ID in a contest is rejected before insertion. 
+he loose end is that we never added hashCode(), and we haven't written the duplicate-removal tests we planned.
+
+Node removal: implemented, not yet proven. remove handles the first, middle, and last node, decrements the size once, and returns false for an empty chain or an absent item. 
+Removing the only node leaves head null. We planned to trace 0, 1, 2, and 3+ node cases as tests, and since we have no tests yet, this risk is reduced but not closed.
+
+Tallying: figured out. We recalculate totals from the chains whenever results are requested and keep no running counters, so they can't drift after a correction. 
+Ties are reported (plurality names the tied candidates, and a proposal tie counts as "Not passed"), and an empty contest prints "No votes recorded". 
+The cost is speed: without an iterator, these recounts are O(N²).
+
+Stretch: saved elections, done. Elections save to a versioned binary file and are validated on load, so a damaged file can't replace the current tally. Saves overwrite silently, though.
+Stretch: voting methods, mostly done. Plurality, majority-required, and ranked choice (instant runoff) all work, with round-by-round results. 
+Ranked ballots must rank every candidate. Elimination ties report an "unresolved tie" instead of using a tie-break rule, and we didn't build configurable vote-transfer rules.
+Stretch: GUI and results export, not started.
+
+**What doesn't work yet**
+Missing hashCode() and iterator() (see above).
+Node<T> isn't private nested.
+Ranked-choice ties end with no winner.
+Silent save overwrite.
+Cleanup left to do: remove EthanGearhart.java and the test save file in elections/.
 
 ## Next Steps:
 
