@@ -1,190 +1,214 @@
 package BallotApp;
+
 import java.util.Iterator;
 
 /**
  * Generic, singly-linked collection that permits duplicate nonnull items.
+ * Additions occur at the head (newest first). Searching and removal use
+ * equals(), not identity. No election or ballot rules appear in this reusable
+ * data structure. Iteration is read-only.
  *
- * <p>Additions occur at the head (newest first). Searching and removal
- * use equals(), not identity. No election or ballot rules appear in this
- * reusable data structure. Iteration is read-only.</p>
- *
- * @param <T> element type; not restricted to any vote class
+ * @param <T>
+ *            element type; not restricted to any vote class
  */
-public class ElectionChain<T> implements Iterable<T> {
+public class ElectionChain<T>
+{
 
     private Node<T> head;
     private int numberOfEntries;
 
     /**
-     * Constructs an empty linked chain with null head and zero entries.
+     * Creates an empty chain.
      */
-    public ElectionChain() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public ElectionChain()
+    {
+        head = null;
+        numberOfEntries = 0;
     }
 
+
     /**
-     * Adds a nonnull entry at the head in constant time.
+     * Adds an entry at the head of the chain. O(1).
      *
-     * @param entry item to insert
-     * @throws IllegalArgumentException when entry is null
+     * @param entry
+     *            entry to add
+     * @throws IllegalArgumentException
+     *             if entry is null
      */
-    public void add(T entry) {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Removes only the first element equal to entry, preserving all
-     * remaining elements and links. Absent items return false.
-     *
-     * @param entry item to find using equals()
-     * @return true if an entry was removed; false if not found
-     * @throws IllegalArgumentException when entry is null
-     */
-    public boolean remove(T entry) {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Searches for an equal element.
-     *
-     * @param entry nonnull query
-     * @return true if the chain contains an equal entry
-     * @throws IllegalArgumentException when entry is null
-     */
-    public boolean contains(T entry) {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Counts every equal occurrence, including duplicates. For vote
-     * objects, equality counts matching voter IDs, NOT candidate totals.
-     *
-     * @param entry nonnull query
-     * @return number of equal elements
-     * @throws IllegalArgumentException when entry is null
-     */
-    public int count(T entry) {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Returns the entry at a zero-based index, newest first.
-     *
-     * @param index index, from 0 to size()-1
-     * @return element at index
-     * @throws IndexOutOfBoundsException for invalid index
-     */
-    public T get(int index) {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Returns the number of stored elements in O(1).
-     *
-     * @return current chain size
-     */
-    public int size() {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Checks whether the chain contains zero elements in O(1).
-     *
-     * @return true if the chain is empty
-     */
-    public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Drops all nodes by clearing the head reference and entry count.
-     */
-    public void clear() {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Returns a typed, read-only iterator from head to end.
-     *
-     * @return iterator in newest-first order
-     */
-    @Override
-    public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    /**
-     * Private generic node shared by all LinkedChain<T> instantiations.
-     * Contains one element and a reference to the next node.
-     *
-     * @param <E> node element type
-     */
-    private static class Node<E> {
-        private E data;
-        private Node<E> next;
-
-        /**
-         * Creates a node with a null next reference.
-         *
-         * @param data stored element
-         */
-        private Node(E data) {
-            throw new UnsupportedOperationException("Not implemented yet.");
+    public void add(T entry)
+    {
+        if (entry == null)
+        {
+            throw new IllegalArgumentException("Entry cannot be null.");
         }
 
-        /**
-         * Creates a node with data and a specified successor.
-         *
-         * @param data stored element
-         * @param next following node (possibly null)
-         */
-        private Node(E data, Node<E> next) {
-            throw new UnsupportedOperationException("Not implemented yet.");
-        }
+        head = new Node<T>(entry, head);
+        numberOfEntries++;
     }
 
+
     /**
-     * Iterates over chain nodes without exposing links or supporting
-     * removal through the iterator.
+     * Removes the first entry equal to the given entry. O(N). Other entries,
+     * including duplicates, remain in the chain.
+     *
+     * @param entry
+     *            entry to find and remove
+     * @return true if a matching entry was removed; false if not found
+     * @throws IllegalArgumentException
+     *             if entry is null
      */
-    private class ChainIterator implements Iterator<T> {
-        private Node<T> current;
-
-        /** Starts traversal at the head. */
-        private ChainIterator() {
-            throw new UnsupportedOperationException("Not implemented yet.");
+    public boolean remove(T entry)
+    {
+        if (entry == null)
+        {
+            throw new IllegalArgumentException("Entry cannot be null.");
         }
 
-        /**
-         * Checks whether another element is available.
-         *
-         * @return true while current is not null
-         */
-        @Override
-        public boolean hasNext() {
-            throw new UnsupportedOperationException("Not implemented yet.");
+        if (head == null)
+        {
+            return false;
         }
 
-        /**
-         * Returns the current element and advances to the following node.
-         *
-         * @return next element
-         * @throws java.util.NoSuchElementException if past the end
-         */
-        @Override
-        public T next() {
-            throw new UnsupportedOperationException("Not implemented yet.");
+        if (head.getData().equals(entry))
+        {
+            head = head.getNext();
+            numberOfEntries--;
+            return true;
         }
 
-        /**
-         * Iterator mutation is not supported by the specified contract.
-         *
-         * @throws UnsupportedOperationException on every call
-         */
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Iterator removal is not supported.");
+        Node<T> current = head;
+        while (current.getNext() != null)
+        {
+            if (current.getNext().getData().equals(entry))
+            {
+                current.setNext(current.getNext().getNext());
+                numberOfEntries--;
+                return true;
+            }
+            current = current.getNext();
         }
+
+        return false;
+    }
+
+
+    /**
+     * Checks whether the chain contains an entry equal to the given entry.
+     * O(N).
+     *
+     * @param entry
+     *            entry to search for
+     * @return true if an equal entry exists; false otherwise
+     * @throws IllegalArgumentException
+     *             if entry is null
+     */
+    public boolean contains(T entry)
+    {
+        if (entry == null)
+        {
+            throw new IllegalArgumentException("Entry cannot be null.");
+        }
+
+        Node<T> current = head;
+        while (current != null)
+        {
+            if (current.getData().equals(entry))
+            {
+                return true;
+            }
+            current = current.getNext();
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Counts every entry equal to the given entry, including duplicates. O(N).
+     *
+     * @param entry
+     *            entry to count
+     * @return number of matching entries
+     * @throws IllegalArgumentException
+     *             if entry is null
+     */
+    public int count(T entry)
+    {
+        if (entry == null)
+        {
+            throw new IllegalArgumentException("Entry cannot be null.");
+        }
+
+        int matches = 0;
+        Node<T> current = head;
+        while (current != null)
+        {
+            if (current.getData().equals(entry))
+            {
+                matches++;
+            }
+            current = current.getNext();
+        }
+
+        return matches;
+    }
+
+
+    /**
+     * Retrieves the entry at the given zero-based index. Index 0 is the newest
+     * entry, because entries are added at the head. O(N).
+     *
+     * @param index
+     *            index of the entry to retrieve
+     * @return the entry at the requested index
+     * @throws IndexOutOfBoundsException
+     *             if index is not in the chain
+     */
+    public T get(int index)
+    {
+        if (index < 0 || index >= numberOfEntries)
+        {
+            throw new IndexOutOfBoundsException("Invalid index: " + index);
+        }
+
+        Node<T> current = head;
+        for (int i = 0; i < index; i++)
+        {
+            current = current.getNext();
+        }
+
+        return current.getData();
+    }
+
+
+    /**
+     * Returns the number of entries in the chain. O(1).
+     *
+     * @return chain size
+     */
+    public int size()
+    {
+        return numberOfEntries;
+    }
+
+
+    /**
+     * Checks whether the chain is empty. O(1).
+     *
+     * @return true if the chain has no entries
+     */
+    public boolean isEmpty()
+    {
+        return numberOfEntries == 0;
+    }
+
+
+    /**
+     * Removes all entries from the chain. O(1).
+     */
+    public void clear()
+    {
+        head = null;
+        numberOfEntries = 0;
     }
 }
-
